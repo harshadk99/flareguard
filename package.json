@@ -1,0 +1,24 @@
+{
+  "name": "flareguard",
+  "version": "1.0.0",
+  "description": "Cloudflare security auditing tool",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test:zero-trust": "node test_zero_trust.js",
+    "test:multi-zone": "node test_multi_zone.js",
+    "preview-dashboard": "open multi_zone_dashboard.html"
+  },
+  "keywords": [
+    "cloudflare",
+    "security",
+    "audit",
+    "zero-trust"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "js-yaml": "^4.1.0",
+    "node-fetch": "^3.3.2"
+  }
+}

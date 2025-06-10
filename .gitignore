@@ -192,3 +192,21 @@ cython_debug/
 #  refer to https://docs.cursor.com/context/ignore-files
 .cursorignore
 .cursorindexingignore
+
+# Node.js specific ignores
+node_modules/
+npm-debug.log
+yarn-debug.log
+yarn-error.log
+.npm
+.yarn/
+.pnp.*
+.yarn-integrity
+
+# Cloudflare Workers
+.wrangler/
+worker/
+.dev.vars
+
+# PDF and other non-code files
+*.pdf

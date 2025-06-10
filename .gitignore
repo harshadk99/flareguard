@@ -210,3 +210,21 @@ worker/
 
 # PDF and other non-code files
 *.pdf
+
+# Project-specific temporary files
+FlareGuard - Cloudflare Security Auditing.html
+landing_page_update.html
+multi_zone_dashboard.html
+flareguard-worker/
+production_report.html
+report.html
+test_helpers.js
+test_multi_zone.js
+test_zero_trust.js
+updated_index.js
+verify_access_apps.sh
+verify_settings.sh
+verify_working.sh
+multi_zone_module.js
+zero_trust_implementation.js
+zero_trust_module.js

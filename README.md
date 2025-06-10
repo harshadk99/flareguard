@@ -6,6 +6,8 @@ FlareGuard is a security auditing tool for Cloudflare configurations, designed t
 
 FlareGuard runs as a Cloudflare Worker that audits your Cloudflare zone configurations against security best practices. It evaluates settings across multiple security domains including SSL/TLS, WAF, DNS, and Firewall to provide a comprehensive security score and actionable recommendations.
 
+**Dashboard URL:** [https://flareguard.harshad-surfer.workers.dev/](https://flareguard.harshad-surfer.workers.dev/)
+
 ## Features
 
 ### Zone Security Checks
@@ -148,7 +150,7 @@ For zone security auditing:
 - Page Rules Read
 
 ### Using the Dashboard
-1. Navigate to the FlareGuard dashboard
+1. Navigate to the FlareGuard dashboard at https://flareguard.harshad-surfer.workers.dev/
 2. Enter your Cloudflare Zone ID
 3. Enter your API token
 4. Click "Test Connection" to verify credentials

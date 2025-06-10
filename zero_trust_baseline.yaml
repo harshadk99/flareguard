@@ -1,0 +1,278 @@
+---
+# Zero Trust Access Security Baseline for FlareGuard
+# Version: 1.0.0
+# This baseline defines security checks for Cloudflare Zero Trust and Access applications
+
+checks:
+  - id: ZT-ACCESS-001
+    title: MFA Required for All Access Applications
+    description: Multi-factor authentication should be enabled for all Access applications to provide additional security beyond just username and password.
+    severity: HIGH
+    service: Access
+    nist_controls: 
+      - IA-2(1)
+      - IA-2(2)
+    evaluation:
+      type: access_app_policy
+      check_for: 
+        - require_mfa: true
+    remediation: |
+      Enable MFA requirements for all Access applications:
+      1. Go to Access > Applications
+      2. Select each application
+      3. Edit the Access policy
+      4. Add an "Authentication Method" requirement for MFA
+
+  - id: ZT-ACCESS-002
+    title: Appropriate Session Durations
+    description: Session durations should be limited to appropriate timeframes based on application sensitivity.
+    severity: MEDIUM
+    service: Access
+    nist_controls:
+      - AC-11
+      - AC-12
+    evaluation:
+      type: access_app_settings
+      check_for:
+        - session_duration: <= 8h
+        - high_sensitivity_apps: <= 4h
+    remediation: |
+      Adjust session durations for Access applications:
+      1. Go to Access > Applications
+      2. Select each application
+      3. Edit "Session Duration"
+      4. Set to 8 hours maximum for standard apps, 4 hours or less for sensitive applications
+
+  - id: ZT-ACCESS-003
+    title: Device Posture Checks Implemented
+    description: Device posture checks should be implemented to ensure only trusted devices can access sensitive applications.
+    severity: HIGH
+    service: Access
+    nist_controls:
+      - CM-2
+      - CM-6
+      - SC-7(10)
+    evaluation:
+      type: device_posture_rules
+      check_for:
+        - has_device_rules: true
+    remediation: |
+      Implement device posture checks:
+      1. Go to Settings > WARP Client
+      2. Navigate to Device Posture
+      3. Add device posture checks for OS version, disk encryption, or firewall status
+      4. Apply these checks to your Access policies
+
+  - id: ZT-ACCESS-004
+    title: No "Allow All" Policies
+    description: Access policies should not use "Allow All" rules, which grant access to anyone.
+    severity: HIGH
+    service: Access
+    nist_controls:
+      - AC-3
+      - AC-6
+    evaluation:
+      type: access_policy
+      check_for:
+        - has_allow_all: false
+    remediation: |
+      Replace "Allow All" policies with specific inclusion rules:
+      1. Go to Access > Applications
+      2. Identify apps with "Allow" and no conditions
+      3. Edit these policies to include specific email domains, groups, or users
+      4. Consider adding location or device-based requirements
+
+  - id: ZT-ACCESS-005
+    title: Secure Identity Provider Configuration
+    description: Identity providers should be securely configured with MFA support and proper integration.
+    severity: CRITICAL
+    service: Access
+    nist_controls:
+      - IA-2
+      - IA-5
+    evaluation:
+      type: identity_providers
+      check_for:
+        - supports_mfa: true
+        - is_securely_configured: true
+    remediation: |
+      Ensure your identity providers are securely configured:
+      1. Go to Access > Authentication
+      2. Review your identity providers
+      3. Ensure they support MFA
+      4. Verify secure SAML/OIDC integration with proper certificate validation
+
+  - id: ZT-ACCESS-006
+    title: Browser Isolation for Sensitive Applications
+    description: Browser isolation should be enabled for sensitive applications to prevent data exfiltration and protect against browser-based attacks.
+    severity: MEDIUM
+    service: Access
+    nist_controls:
+      - SC-7(12)
+      - AC-4
+    evaluation:
+      type: browser_isolation
+      check_for:
+        - sensitive_apps_isolated: true
+    remediation: |
+      Enable browser isolation for sensitive applications:
+      1. Go to Access > Applications
+      2. Select sensitive applications
+      3. Enable "Browser Rendering" under "Browser Isolation"
+      4. Choose appropriate isolation mode (Remote Browser or Local Browser)
+
+  - id: ZT-ACCESS-007
+    title: Geo-Restrictions for Sensitive Applications
+    description: Geo-restrictions should be implemented for sensitive applications to limit access from high-risk regions.
+    severity: MEDIUM
+    service: Access
+    nist_controls:
+      - AC-4
+      - SC-7
+    evaluation:
+      type: geo_restrictions
+      check_for:
+        - has_geo_restrictions: true
+    remediation: |
+      Implement geo-restrictions for sensitive applications:
+      1. Go to Access > Applications
+      2. Select sensitive applications
+      3. Edit the Access policy
+      4. Add a "Country" condition to allow only specific countries
+      5. Consider blocking access from high-risk regions
+
+  - id: ZT-ACCESS-008
+    title: Approval Groups for Critical Applications
+    description: Critical applications should require approval workflows for access.
+    severity: HIGH
+    service: Access
+    nist_controls:
+      - AC-6(1)
+      - AC-6(2)
+    evaluation:
+      type: approval_workflow
+      check_for:
+        - critical_apps_require_approval: true
+    remediation: |
+      Implement approval workflows for critical applications:
+      1. Go to Access > Applications
+      2. Select critical applications
+      3. Edit the Access policy
+      4. Add an "Approval Group" requirement
+      5. Configure approvers and approval expiration settings
+
+  - id: ZT-NETWORK-001
+    title: DNS Filtering Enabled
+    description: DNS filtering should be enabled to block malicious domains and content categories.
+    severity: HIGH
+    service: Gateway
+    nist_controls:
+      - SC-7
+      - SI-3
+    evaluation:
+      type: dns_filtering
+      check_for:
+        - is_enabled: true
+        - blocks_malicious: true
+    remediation: |
+      Enable DNS filtering:
+      1. Go to Gateway > DNS
+      2. Enable DNS filtering
+      3. Configure policies to block malware, phishing, and other malicious categories
+      4. Consider enabling TLS inspection for HTTPS filtering
+
+  - id: ZT-NETWORK-002
+    title: Split Tunnel Configuration
+    description: WARP client should be configured with appropriate split tunneling rules.
+    severity: MEDIUM
+    service: WARP
+    nist_controls:
+      - AC-17
+      - SC-7
+    evaluation:
+      type: split_tunnel
+      check_for:
+        - has_split_tunnel_config: true
+    remediation: |
+      Configure appropriate split tunneling:
+      1. Go to Settings > WARP Client
+      2. Navigate to Split Tunnels
+      3. Configure Include or Exclude mode based on your security requirements
+      4. Define specific IPs, domains, or applications for split tunneling
+
+  - id: ZT-NETWORK-003
+    title: Private Network Protection
+    description: Private networks should be protected with appropriate access controls.
+    severity: HIGH
+    service: Tunnels
+    nist_controls:
+      - AC-3
+      - SC-7
+    evaluation:
+      type: private_network
+      check_for:
+        - has_access_controls: true
+    remediation: |
+      Implement private network protection:
+      1. Go to Access > Tunnels
+      2. Ensure all private networks have Access policies
+      3. Configure appropriate authentication and authorization rules
+      4. Avoid public access to private networks
+
+  - id: ZT-POLICY-001
+    title: Secure Access Service Edge (SASE) Implementation
+    description: Cloudflare One should be configured as a comprehensive SASE solution.
+    severity: MEDIUM
+    service: Cloudflare One
+    nist_controls:
+      - SC-7
+      - AC-17
+    evaluation:
+      type: sase_implementation
+      check_for:
+        - has_integrated_components: true
+    remediation: |
+      Implement a comprehensive SASE solution:
+      1. Integrate Access, Gateway, WARP, and Tunnels
+      2. Configure consistent policies across all components
+      3. Implement centralized logging and monitoring
+      4. Ensure all traffic is inspected appropriately
+
+  - id: ZT-POLICY-002
+    title: Data Loss Prevention Rules
+    description: DLP rules should be configured to prevent sensitive data exfiltration.
+    severity: HIGH
+    service: Gateway
+    nist_controls:
+      - SC-7
+      - SI-4
+    evaluation:
+      type: dlp_rules
+      check_for:
+        - has_dlp_rules: true
+    remediation: |
+      Configure Data Loss Prevention rules:
+      1. Go to Gateway > DLP
+      2. Create rules to detect and block sensitive data patterns
+      3. Configure appropriate actions for DLP violations
+      4. Test rules to ensure they catch sensitive data
+
+  - id: ZT-AUDIT-001
+    title: Comprehensive Logging Enabled
+    description: Comprehensive logging should be enabled for Zero Trust services.
+    severity: MEDIUM
+    service: Logs
+    nist_controls:
+      - AU-2
+      - AU-3
+      - AU-12
+    evaluation:
+      type: logging
+      check_for:
+        - comprehensive_logging: true
+    remediation: |
+      Enable comprehensive logging:
+      1. Go to Account > Logs
+      2. Configure logging for Access, Gateway, and WARP
+      3. Set up log retention policies
+      4. Consider integrating with SIEM solutions for advanced monitoring 

@@ -1,16 +1,12 @@
 # FlareGuard - Cloudflare Security Auditing Tool
 
-FlareGuard is a comprehensive security auditing tool for Cloudflare configurations, designed to help organizations ensure their Cloudflare setup follows security best practices. It provides an easy-to-use dashboard for security teams to quickly identify and remediate security issues.
+FlareGuard is a security auditing tool for Cloudflare configurations, designed to help organizations ensure their Cloudflare setup follows security best practices. It provides an easy-to-use dashboard for security teams to quickly identify and remediate security issues.
 
-![FlareGuard Dashboard](https://via.placeholder.com/800x400?text=FlareGuard+Dashboard)
+## Overview
+
+FlareGuard runs as a Cloudflare Worker that audits your Cloudflare zone configurations against security best practices. It evaluates settings across multiple security domains including SSL/TLS, WAF, DNS, and Firewall to provide a comprehensive security score and actionable recommendations.
 
 ## Features
-
-### Multi-Zone Security Auditing
-- Audit multiple zones simultaneously
-- Compare security posture across zones
-- Identify common issues affecting multiple zones
-- Prioritize remediation efforts based on severity and impact
 
 ### Zone Security Checks
 - SSL/TLS configuration validation
@@ -23,49 +19,140 @@ FlareGuard is a comprehensive security auditing tool for Cloudflare configuratio
 - Email Obfuscation verification
 - Security Level assessment
 
-### Zero Trust & Access Security
-- Access applications security assessment
-- Identity provider configuration verification
-- Device posture checks evaluation
-- Access policy security analysis
-- Approval workflows for critical applications
-- Session duration validation
-- Gateway DNS filtering verification
-- "Allow All" policies detection
+### Security Scoring
+- Overall security score calculation
+- Category-based scoring
+- Severity-based issue prioritization
+- NIST control mapping for compliance
 
-### Comprehensive Reporting
-- Security score calculation
+### Reporting
+- Interactive web dashboard
 - Detailed remediation recommendations
-- Executive summary for leadership
-- Exportable reports for compliance purposes
-- Trend analysis across audit runs
+- HTML report generation
+- JSON output for integration with other tools
+
+## Architecture
+
+FlareGuard is implemented as a Cloudflare Worker, providing a serverless, globally distributed security auditing solution.
+
+```mermaid
+flowchart TB
+    subgraph User["User Interface"]
+        Dashboard["FlareGuard Dashboard"]
+    end
+    
+    subgraph Worker["Cloudflare Worker"]
+        API["API Endpoints"]
+        Audit["Audit Engine"]
+        Baseline["Security Baseline"]
+        Report["Report Generator"]
+    end
+    
+    subgraph CloudflareAPI["Cloudflare API"]
+        ZoneAPI["Zone API"]
+        SSLAPI["SSL/TLS API"]
+        WAFAPI["WAF API"]
+        DNSAPI["DNS API"]
+        FirewallAPI["Firewall API"]
+    end
+    
+    Dashboard -->|1. Submit Zone ID & API Token| API
+    API -->|2. Test Connection| CloudflareAPI
+    API -->|3. Request Audit| Audit
+    Audit -->|4. Load Rules| Baseline
+    Audit -->|5. Fetch Settings| CloudflareAPI
+    CloudflareAPI -->|6. Return Settings| Audit
+    Audit -->|7. Evaluate Security| Audit
+    Audit -->|8. Generate Results| Report
+    Report -->|9. Return HTML/JSON| API
+    API -->|10. Display Results| Dashboard
+    
+    classDef primary fill:#f38020,stroke:#333,stroke-width:1px,color:white;
+    classDef secondary fill:#faad3f,stroke:#333,stroke-width:1px,color:white;
+    classDef api fill:#404041,stroke:#333,stroke-width:1px,color:white;
+    classDef ui fill:#4CAF50,stroke:#333,stroke-width:1px,color:white;
+    
+    class Dashboard,Report ui;
+    class API,Audit primary;
+    class Baseline secondary;
+    class ZoneAPI,SSLAPI,WAFAPI,DNSAPI,FirewallAPI api;
+```
+
+### Components
+
+1. **FlareGuard Worker**: Core serverless application that processes audit requests
+2. **Security Baseline**: YAML-defined security rules embedded in the worker
+3. **Dashboard UI**: Browser-based interface for interacting with the worker
+4. **API Endpoints**:
+   - `/audit` - Runs a security audit on a specified zone
+   - `/test-connection` - Validates API credentials
+
+## Workflow
+
+```mermaid
+flowchart LR
+    Start(["Start"]) --> Credentials["Enter Credentials<br/>(Zone ID, API Token)"]
+    Credentials --> TestConnection["Test Connection"]
+    TestConnection -->|Valid| RunAudit["Run Zone Audit"]
+    TestConnection -->|Invalid| Credentials
+    
+    RunAudit --> FetchSettings["Fetch Zone Settings"]
+    FetchSettings --> EvaluateSettings["Evaluate Settings<br/>Against Baseline"]
+    
+    subgraph BaselineChecks["Security Checks"]
+        TLS["TLS/SSL Checks"]
+        WAF["WAF Checks"]
+        DNS["DNS Checks"]
+        Firewall["Firewall Checks"]
+        Access["Access Checks"]
+    end
+    
+    EvaluateSettings --> BaselineChecks
+    BaselineChecks --> ScoreCalculation["Calculate Security Score"]
+    ScoreCalculation --> GenerateReport["Generate Report"]
+    GenerateReport --> DisplayResults["Display Results"]
+    DisplayResults --> End(["End"])
+    
+    classDef primary fill:#f38020,stroke:#333,stroke-width:1px,color:white;
+    classDef secondary fill:#faad3f,stroke:#333,stroke-width:1px,color:white;
+    classDef process fill:#4CAF50,stroke:#333,stroke-width:1px,color:white;
+    classDef endpoint fill:#404041,stroke:#333,stroke-width:1px,color:white;
+    
+    class Start,End endpoint;
+    class Credentials,TestConnection,RunAudit,FetchSettings primary;
+    class EvaluateSettings,ScoreCalculation,GenerateReport,DisplayResults process;
+    class TLS,WAF,DNS,Firewall,Access secondary;
+```
+
+The workflow follows these key steps:
+
+1. **Input Credentials**: User provides Zone ID and API Token through the dashboard
+2. **Test Connection**: Validates API credentials before proceeding
+3. **Fetch Zone Settings**: Retrieves zone configuration via Cloudflare API
+4. **Evaluate Security Checks**: Compares settings against security baseline
+5. **Generate Report**: Creates an interactive report with findings and recommendations
 
 ## Getting Started
 
 ### Prerequisites
 - Cloudflare account
-- Zone ID(s) for the domain(s) you want to audit
+- Zone ID for the domain you want to audit
 - API token with appropriate permissions
 
 ### API Token Permissions Required
-For basic zone security auditing:
+For zone security auditing:
 - Zone Read
 - SSL and Certificates Read
 - WAF Read
 - DNS Read
 - Page Rules Read
 
-For Zero Trust auditing:
-- Account Access: Apps and Policies Read
-- Gateway: DNS Read
-- Zero Trust: Access Read
-
 ### Using the Dashboard
 1. Navigate to the FlareGuard dashboard
-2. Enter your Cloudflare Zone ID (or Account ID for Zero Trust)
+2. Enter your Cloudflare Zone ID
 3. Enter your API token
-4. Choose the audit type (Zone Security, Zero Trust, or Multi-Zone)
-5. Click "Run Audit"
+4. Click "Test Connection" to verify credentials
+5. Click "Run Audit" to analyze your zone
 
 ### Understanding Results
 The dashboard presents results in several sections:
@@ -74,9 +161,8 @@ The dashboard presents results in several sections:
 - **Recommendations**: Specific actions to remediate issues
 - **Details**: In-depth explanation of each security check
 
-## Security Baselines
+## Security Baseline
 
-### Zone Security Baseline
 FlareGuard evaluates your zone against security best practices including:
 - SSL/TLS mode: Full (Strict) recommended
 - Minimum TLS version: TLS 1.2 recommended
@@ -85,45 +171,34 @@ FlareGuard evaluates your zone against security best practices including:
 - TLS 1.3: Should be enabled
 - Browser Integrity Check: Should be enabled
 - Email Obfuscation: Should be enabled
+- WAF: OWASP Core Rule Set should be enabled
 - Security Level: Medium or higher recommended
-
-### Zero Trust Baseline
-For Zero Trust configurations, FlareGuard checks:
-- MFA required for all Access applications
-- Appropriate session durations (8 hours max recommended)
-- Device posture checks implemented
-- No "Allow All" policies
-- Secure identity provider configuration
-- Browser isolation for sensitive applications
-- Geo-restrictions for sensitive applications
-- Approval groups for critical applications
+- Bot Management: Should be enabled to block malicious automated traffic
+- DNSSEC: Should be enabled to prevent DNS spoofing attacks
 
 ## Implementation Details
 
 FlareGuard is implemented as a Cloudflare Worker, making it easy to deploy and maintain. The security checks are executed directly using the Cloudflare API, ensuring up-to-date and accurate results.
 
-### Architecture
-- **Worker**: Core service that handles API requests and responses
-- **Dashboard UI**: User-friendly interface for viewing results
-- **API Module**: Handles communication with Cloudflare API
-- **Security Modules**: Specialized modules for different security domains
-- **Multi-Zone Module**: Coordinates audits across multiple zones
+The worker is built using:
+- JavaScript
+- Cloudflare Workers runtime
+- js-yaml for YAML parsing
+- Embedded security baseline
+
+## Deployment
+
+FlareGuard is deployed using Wrangler, Cloudflare's CLI tool for Workers:
+
+```bash
+wrangler deploy
+```
+
+This deploys the worker to your Cloudflare account, making it accessible via your workers.dev subdomain.
 
 ## Roadmap
 
 See the [roadmap.md](roadmap.md) file for planned enhancements to FlareGuard.
-
-## Verification Tools
-
-For users who want to verify FlareGuard's findings directly against the Cloudflare API, we provide several verification tools:
-
-- **verify_settings.sh**: Shell script to query Cloudflare API directly
-- **verify_access_apps.sh**: Shell script to verify Access Apps configuration
-- **verification_checklist.md**: Manual verification checklist
-
-## Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## License
 

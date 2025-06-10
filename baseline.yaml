@@ -1,0 +1,308 @@
+# FlareGuard Security Baseline Checks
+
+# Access (Zero Trust) Checks
+- id: ZT-01
+  title: MFA Required for All Access Apps
+  description: Verifies that all Access applications enforce multi-factor authentication
+  service: Access
+  check_type: access-policy
+  check_details:
+    mfa: enforced
+    identity_provider: configured
+  severity: high
+  nist_controls: [IA-2, AC-3]
+
+- id: ZT-02
+  title: Device Posture Checks Enabled
+  description: Ensures device posture checks are configured for sensitive applications
+  service: Access
+  check_type: access-policy
+  check_details:
+    device_posture: enabled
+    device_trust: required
+  severity: medium
+  nist_controls: [CM-2, AC-19]
+
+- id: ZT-03
+  title: Session Duration Limits
+  description: Validates that access sessions have appropriate timeout settings
+  service: Access
+  check_type: access-policy
+  check_details:
+    session_duration: "<=24h"
+    idle_timeout: "<=1h"
+  severity: medium
+  nist_controls: [AC-11, SC-10]
+
+# Gateway (DNS + HTTP filtering) Checks
+- id: GW-01
+  title: DNS Filtering Enabled
+  description: Verifies that DNS filtering is enabled to block malicious domains
+  service: Gateway
+  check_type: dns-settings
+  check_details:
+    dns_filtering: enabled
+    security_categories: configured
+  severity: high
+  nist_controls: [SC-7, SI-3]
+
+- id: GW-02
+  title: HTTPS Inspection Configured
+  description: Ensures HTTPS inspection is enabled for detecting threats in encrypted traffic
+  service: Gateway
+  check_type: http-settings
+  check_details:
+    https_inspection: enabled
+    certificate_deployed: true
+  severity: high
+  nist_controls: [SC-7, SI-4]
+
+- id: GW-03
+  title: Block High-Risk Categories
+  description: Validates that high-risk content categories are blocked
+  service: Gateway
+  check_type: dns-settings
+  check_details:
+    block_malware: true
+    block_phishing: true
+    block_command_control: true
+  severity: critical
+  nist_controls: [SC-7, SI-3, SI-4]
+
+# WAF Checks
+- id: WAF-01
+  title: OWASP Core Rule Set Enabled
+  description: Verifies that the OWASP Core Rule Set is enabled and properly configured
+  service: WAF
+  check_type: waf-config
+  check_details:
+    owasp_ruleset: enabled
+    sensitivity: medium_or_higher
+  severity: critical
+  nist_controls: [SI-3, SC-7]
+
+- id: WAF-02
+  title: Rate Limiting Configured
+  description: Ensures rate limiting is configured to prevent brute force attacks
+  service: WAF
+  check_type: waf-config
+  check_details:
+    rate_limiting: enabled
+    threshold: "<=100"
+  severity: high
+  nist_controls: [SC-5, SI-4]
+
+- id: WAF-03
+  title: WAF Logging Enabled
+  description: Validates that WAF logging is enabled for security monitoring
+  service: WAF
+  check_type: waf-config
+  check_details:
+    logging: enabled
+    log_retention: "30d_minimum"
+  severity: medium
+  nist_controls: [AU-2, AU-11]
+
+# Firewall Rules Checks
+- id: FW-01
+  title: Country Blocking for High-Risk Regions
+  description: Verifies that high-risk countries are blocked where business needs don't exist
+  service: Firewall Rules
+  check_type: firewall-rules
+  check_details:
+    country_blocking: configured
+    excluded_countries: validated
+  severity: medium
+  nist_controls: [AC-3, SC-7]
+
+- id: FW-02
+  title: Bot Management Enabled
+  description: Ensures that bot management is enabled to block malicious automated traffic
+  service: Firewall Rules
+  check_type: firewall-rules
+  check_details:
+    bot_management: enabled
+    advanced_protection: true
+  severity: high
+  nist_controls: [SC-5, SI-4]
+
+- id: FW-03
+  title: Challenge Suspicious IPs
+  description: Validates that suspicious IP addresses are challenged or blocked
+  service: Firewall Rules
+  check_type: firewall-rules
+  check_details:
+    ip_reputation: enabled
+    threat_score: configured
+  severity: high
+  nist_controls: [SC-7, SI-3]
+
+# Workers Checks
+- id: WRK-01
+  title: Worker Secrets Management
+  description: Verifies that sensitive data in Workers is stored in environment variables or secret bindings
+  service: Workers
+  check_type: worker-config
+  check_details:
+    hardcoded_secrets: none
+    secret_bindings: configured
+  severity: critical
+  nist_controls: [IA-5, SC-12]
+
+- id: WRK-02
+  title: Worker Security Headers
+  description: Ensures Workers set appropriate security headers in responses
+  service: Workers
+  check_type: worker-config
+  check_details:
+    content_security_policy: configured
+    x_content_type_options: nosniff
+    x_frame_options: deny_or_sameorigin
+  severity: medium
+  nist_controls: [SC-7, SI-10]
+
+- id: WRK-03
+  title: Worker Error Handling
+  description: Validates that Workers implement proper error handling to prevent information disclosure
+  service: Workers
+  check_type: worker-config
+  check_details:
+    error_handling: implemented
+    sensitive_data_leakage: prevented
+  severity: medium
+  nist_controls: [SI-11, SC-8]
+
+# DNS Checks
+- id: DNS-01
+  title: DNSSEC Enabled
+  description: Verifies that DNSSEC is enabled to prevent DNS spoofing attacks
+  service: DNS
+  check_type: dns-settings
+  check_details:
+    dnssec: enabled
+    validation: active
+  severity: high
+  nist_controls: [SC-8, SC-20]
+
+- id: DNS-02
+  title: Secure DNS Records
+  description: Ensures DNS records are configured securely (SPF, DKIM, DMARC)
+  service: DNS
+  check_type: dns-settings
+  check_details:
+    spf: configured
+    dkim: configured
+    dmarc: configured
+  severity: high
+  nist_controls: [SC-8, SC-20]
+
+- id: DNS-03
+  title: DNS Flood Protection
+  description: Validates that DNS flood protection is enabled
+  service: DNS
+  check_type: dns-settings
+  check_details:
+    flood_protection: enabled
+  severity: medium
+  nist_controls: [SC-5, SI-4]
+
+# Logpush Checks
+- id: LOG-01
+  title: HTTP Request Logging Enabled
+  description: Verifies that HTTP request logging is enabled and properly configured
+  service: Logpush
+  check_type: logpush-config
+  check_details:
+    http_requests: enabled
+    destination: configured
+  severity: high
+  nist_controls: [AU-2, AU-3, AU-12]
+
+- id: LOG-02
+  title: Firewall Events Logging
+  description: Ensures firewall events are being logged and exported
+  service: Logpush
+  check_type: logpush-config
+  check_details:
+    firewall_events: enabled
+    destination: configured
+  severity: high
+  nist_controls: [AU-2, SI-4]
+
+- id: LOG-03
+  title: Log Retention Compliance
+  description: Validates that logs are retained according to compliance requirements
+  service: Logpush
+  check_type: logpush-config
+  check_details:
+    retention_period: "90d_minimum"
+    deletion_protection: enabled
+  severity: medium
+  nist_controls: [AU-11, AU-4]
+
+# Load Balancer Checks
+- id: LB-01
+  title: Health Checks Configured
+  description: Verifies that health checks are properly configured for all load balancers
+  service: Load Balancer
+  check_type: lb-config
+  check_details:
+    health_checks: enabled
+    interval: "<=60s"
+  severity: medium
+  nist_controls: [CP-2, CP-7]
+
+- id: LB-02
+  title: SSL/TLS Configuration for Load Balancers
+  description: Ensures load balancers use secure SSL/TLS configurations
+  service: Load Balancer
+  check_type: lb-config
+  check_details:
+    ssl: enabled
+    min_tls_version: "1.2"
+  severity: high
+  nist_controls: [SC-8, SC-13]
+
+- id: LB-03
+  title: Session Affinity Configuration
+  description: Validates appropriate session affinity settings for stateful applications
+  service: Load Balancer
+  check_type: lb-config
+  check_details:
+    session_affinity: configured
+    timeout: appropriate
+  severity: low
+  nist_controls: [SC-10, AC-12]
+
+# TLS/Certificates Checks
+- id: TLS-01
+  title: Minimum TLS Version
+  description: Verifies that minimum TLS version is 1.2 or higher
+  service: TLS/Certificates
+  check_type: tls-config
+  check_details:
+    min_tls_version: "1.2"
+  severity: critical
+  nist_controls: [SC-8, SC-12, SC-13]
+
+- id: TLS-02
+  title: Strong Cipher Suites
+  description: Ensures only strong cipher suites are enabled
+  service: TLS/Certificates
+  check_type: tls-config
+  check_details:
+    weak_ciphers: disabled
+    forward_secrecy: required
+  severity: high
+  nist_controls: [SC-8, SC-13]
+
+- id: TLS-03
+  title: Certificate Expiration Monitoring
+  description: Validates that certificate expiration monitoring is configured
+  service: TLS/Certificates
+  check_type: tls-config
+  check_details:
+    expiration_monitoring: enabled
+    minimum_days_before_expiry: "30_days"
+  severity: high
+  nist_controls: [SC-12, CM-6] 

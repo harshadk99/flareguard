@@ -32,10 +32,10 @@
 - **Session duration checks**: Evaluate session timeout settings
 
 ### API Endpoints Needed
-- `GET /zeroteam/access/identity-providers` - Check IdP configurations
-- `GET /zeroteam/access/apps` - Evaluate Access applications
-- `GET /zeroteam/devices/posture` - Check device posture rules
-- `GET /zeroteam/access/policies` - Evaluate access policies
+- `GET /zerotrust/access/identity-providers` - Check IdP configurations
+- `GET /zerotrust/access/apps` - Evaluate Access applications
+- `GET /zerotrust/devices/posture` - Check device posture rules
+- `GET /zerotrust/access/policies` - Evaluate access policies
 - `POST /audit/zero-trust` - Run comprehensive Zero Trust audit
 
 ### Security Baselines to Add
@@ -55,8 +55,8 @@
 - **Identity risks**: Highlight potential identity vulnerabilities
 
 ### API Endpoints Needed
-- `GET /zeroteam/access/apps` - List and evaluate Access apps
-- `GET /zeroteam/access/apps/{app-id}/policies` - Evaluate app-specific policies
+- `GET /zerotrust/access/apps` - List and evaluate Access apps
+- `GET /zerotrust/access/apps/{app-id}/policies` - Evaluate app-specific policies
 - `POST /audit/access-apps` - Audit Access apps specifically
 
 ### Security Baselines to Add

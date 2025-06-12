@@ -5,10 +5,6 @@ compatibility_date = "2024-07-23"
 # Cloudflare account ID
 account_id = "dfaa0c35a2dcbc8f5beac03052a5ddd1"
 
-# Configure static file serving
-[site]
-bucket = "./public"
-
 [vars]
 # Environment variables to configure your worker
 # Add your variables here when needed

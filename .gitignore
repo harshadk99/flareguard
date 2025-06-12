@@ -205,8 +205,16 @@ yarn-error.log
 
 # Cloudflare Workers
 .wrangler/
-worker/
 .dev.vars
+dist/
+worker/
+.env
+
+# Temporary files
+*-minimal.*
+*-test.*
+*-api.*
+deploy.js
 
 # PDF and other non-code files
 *.pdf
@@ -227,4 +235,4 @@ verify_settings.sh
 verify_working.sh
 multi_zone_module.js
 zero_trust_implementation.js
-zero_trust_module.js
+zero_trust_module.js.DS_Store

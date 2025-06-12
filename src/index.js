@@ -73,7 +73,7 @@ const BASELINE_YAML = `# FlareGuard Security Baseline Checks - Sample subset
   nist_controls: [SC-5, SI-4]`;
 
 /**
- * Run audit on a Cloudflare Zone - Using simulated data based on our verification
+ * Run audit on a Cloudflare Zone - Using real API data
  * @param {string} zoneId - Cloudflare Zone ID
  * @param {string} apiToken - Cloudflare API Token
  * @returns {Object} Audit results
@@ -85,18 +85,8 @@ async function auditZone(zoneId, apiToken) {
       throw new Error("Missing required parameters: zone_id and api_token");
     }
 
-    // Since we've verified the actual settings via our verify_working.sh script,
-    // we'll use that data to provide accurate results
-    const settings = {
-      ssl_mode: "full",                  // From API verification: CF-SSL-001
-      min_tls_version: "1.0",            // From API verification: CF-TLS-001
-      always_use_https: "on",            // From API verification: CF-HTTPS-001
-      opportunistic_encryption: "on",     // From API verification: CF-TLS-002
-      tls_1_3: "on",                     // From API verification: CF-TLS-003
-      browser_check: "on",               // From API verification: CF-BROWSER-001
-      email_obfuscation: "on",           // From API verification: CF-EMAIL-001
-      security_level: "medium",          // From API verification: CF-CHALLENGE-001
-    };
+    // Fetch actual settings from the API instead of using hard-coded values
+    const settings = await fetchWorkingSettings(zoneId, apiToken);
     
     // Evaluate settings against security baseline
     const details = evaluateSettings(settings);
@@ -922,7 +912,7 @@ async function handleTestConnection(request) {
 /**
  * Main request handler for FlareGuard worker
  */
-async function fetch(request, env, ctx) {
+async function handleRequest(request, env, ctx) {
   const url = new URL(request.url);
   
   // Handle dashboard UI
@@ -1570,5 +1560,10 @@ function generateDashboardHtml() {
 }
 
 export default {
-  fetch
+  fetch: handleRequest
 }; 
+
+// Add event listener for direct worker invocation
+addEventListener('fetch', event => {
+  event.respondWith(handleRequest(event.request));
+});

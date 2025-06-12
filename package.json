@@ -1,12 +1,16 @@
 {
   "name": "flareguard",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Cloudflare security auditing tool",
-  "main": "index.js",
+  "main": "src/index.js",
   "type": "module",
   "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
     "test:zero-trust": "node test_zero_trust.js",
     "test:multi-zone": "node test_multi_zone.js",
+    "verify:working": "chmod +x ./verify_working.sh && ./verify_working.sh",
+    "verify:settings": "chmod +x ./verify_settings.sh && ./verify_settings.sh",
     "preview-dashboard": "open multi_zone_dashboard.html"
   },
   "keywords": [
@@ -15,7 +19,7 @@
     "audit",
     "zero-trust"
   ],
-  "author": "",
+  "author": "Harshad Kadam",
   "license": "MIT",
   "dependencies": {
     "js-yaml": "^4.1.0",

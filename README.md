@@ -8,6 +8,13 @@
 
 FlareGuard is a serverless security auditing tool that helps organizations verify their Cloudflare configurations against security best practices. It runs as a Cloudflare Worker, providing a user-friendly dashboard to identify and remediate security gaps in your Cloudflare setup.
 
+## Latest Updates
+
+- **Real-time API Integration**: Now fetches live data from the Cloudflare API instead of using hard-coded values
+- **Improved Accuracy**: Security audit results now accurately reflect your actual Cloudflare configuration
+- **Fixed Function Name Collision**: Resolved issues with global fetch function for better reliability
+- **Optimized Deployment**: Removed unnecessary KV namespace dependencies for smoother deployment
+
 ## Screenshot
 
 ![FlareGuard Dashboard](docs/assets/dashboard-screenshot.png)

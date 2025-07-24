@@ -154,6 +154,55 @@ flowchart LR
     class Legend legend;
 ```
 
+## Technical Implementation
+
+FlareGuard is built as a serverless application using Cloudflare Workers, providing a lightweight yet powerful security auditing platform. Here's how it works under the hood:
+
+### Core Components
+
+1. **API Layer** - Handles HTTP requests and routes them to appropriate handlers
+   - Implements RESTful endpoints for audit, test connection, and UI serving
+   - Validates input parameters and provides meaningful error responses
+
+2. **Audit Engine** - The heart of FlareGuard's security assessment
+   - Fetches configuration data from Cloudflare API endpoints
+   - Evaluates settings against security baselines defined in YAML
+   - Maps findings to NIST security controls for compliance reporting
+   - Calculates security scores based on passed/failed checks
+
+3. **Security Baseline** - Defines security best practices
+   - YAML-based configuration for easy maintenance and updates
+   - Categorized checks with severity levels and remediation guidance
+   - Compliance mappings to industry standards
+
+4. **Report Generator** - Creates detailed security reports
+   - Formats findings with clear pass/fail status
+   - Provides actionable remediation steps for failed checks
+   - Generates downloadable HTML reports
+
+5. **Dashboard UI** - Clean, responsive interface
+   - Built with vanilla HTML/CSS/JS for minimal dependencies
+   - Cloudflare-styled design for consistent branding
+   - Interactive elements for real-time feedback
+
+### Key Technical Features
+
+- **Serverless Architecture** - Zero infrastructure to maintain
+- **Real-time API Integration** - Direct calls to Cloudflare API for up-to-date assessment
+- **Modular Design** - Separation of concerns for easier maintenance and extension
+- **Environment Variable Support** - Secure credential management for testing and development
+- **Security-First Implementation** - Input validation, secure token handling, and proper error management
+
+### Implementation Highlights
+
+- **Custom API Client** - Built a lightweight API client for Cloudflare with error handling and response parsing
+- **Dynamic Evaluation Logic** - Flexible check evaluation that adapts to different security requirements
+- **Responsive UI** - Mobile-friendly dashboard that works across devices
+- **Efficient Error Handling** - Comprehensive error management for API calls and user inputs
+- **Performance Optimization** - Minimized dependencies and efficient code for fast worker execution
+
+The codebase is structured for extensibility, making it easy for contributors to add new security checks or extend coverage to additional Cloudflare services.
+
 ## Getting Started
 
 ### Prerequisites

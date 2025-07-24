@@ -13,6 +13,9 @@
 // Import dependencies
 import yaml from 'js-yaml';
 
+// Export functions needed by test scripts
+export { auditZone, fetchWorkingSettings };
+
 // Helper function for making HTTP requests from inside the worker
 async function httpsRequest(url, options) {
   return await fetch(url, options);

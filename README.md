@@ -6,7 +6,15 @@
 [![Build Status](https://img.shields.io/badge/build-passing-brightgreen.svg)]()
 [![Live Demo](https://img.shields.io/badge/demo-live-brightgreen.svg)](https://flareguard.harshad-surfer.workers.dev/)
 
-**[✨ Try FlareGuard Live Demo](https://flareguard.harshad-surfer.workers.dev/)**
+<div align="center">
+  <br />
+  <a href="https://flareguard.harshad-surfer.workers.dev/" style="text-decoration:none;">
+    <img src="https://img.shields.io/badge/🔥_TRY_FLAREGUARD_LIVE_DEMO_🔥-FF7A59?style=for-the-badge&logo=cloudflare&logoColor=white" alt="Try FlareGuard Live Demo" />
+  </a>
+  <br />
+  <p><i>Experience the power of FlareGuard CSPM firsthand!</i></p>
+  <br />
+</div>
 
 ## Comprehensive CSPM for Your Cloudflare Environment
 

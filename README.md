@@ -60,23 +60,17 @@ Enter your Cloudflare Zone ID and API Token to begin the security audit.
 
 ![Step 1: Enter Credentials](docs/assets/1.png)
 
-### 2. Test Connection
-
-Test the connection to ensure your credentials are valid and have the required permissions.
-
-![Step 2: Test Connection](docs/assets/2.png)
-
-### 3. Run Audit
+### 2. Run Audit
 
 Run the security audit to evaluate your zone against security best practices.
 
-![Step 3: Run Audit](docs/assets/3.png)
+![Step 2: Run Audit](docs/assets/3.png)
 
-### 4. View Results
+### 3. View Results
 
 Review the detailed results showing passed and failed checks, with remediation guidance.
 
-![Step 4: View Results](docs/assets/4.png)
+![Step 3: View Results](docs/assets/4.png)
 
 ## Latest Updates
 

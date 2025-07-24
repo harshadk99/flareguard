@@ -1577,11 +1577,14 @@ function generateDashboardHtml() {
   </html>`;
 }
 
+// Only add event listener in Cloudflare Worker environment
+if (typeof addEventListener === 'function') {
+  addEventListener('fetch', event => {
+    event.respondWith(handleRequest(event.request));
+  });
+}
+
+// Export for Node.js environment
 export default {
   fetch: handleRequest
-}; 
-
-// Add event listener for direct worker invocation
-addEventListener('fetch', event => {
-  event.respondWith(handleRequest(event.request));
-});
+};

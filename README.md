@@ -46,6 +46,14 @@ This vision represents where we're heading, and we welcome community contributio
 
 FlareGuard provides a simple workflow to audit your Cloudflare zone security settings. The screenshots below show the web interface in action.
 
+> **Security Note:** When using FlareGuard or sharing screenshots, always redact sensitive information like Zone IDs, API tokens, and domain names. The screenshots below are examples only and should not contain real credentials.
+> 
+> **Important:** Before sharing any screenshots of your FlareGuard usage:
+> 1. Redact or blur all Zone IDs (32-character hexadecimal strings)
+> 2. Never include API tokens in screenshots
+> 3. Consider redacting domain names if they're for internal or sensitive systems
+> 4. Verify no sensitive information appears in the URL bar or browser tabs
+
 ### 1. Enter Credentials
 
 Enter your Cloudflare Zone ID and API Token to begin the security audit.

@@ -149,75 +149,83 @@ async function fetchWorkingSettings(zoneId, apiToken) {
     const settings = {};
     
     // SSL/TLS Mode
-    const sslResponse = await httpsRequest(`https://api.cloudflare.com/client/v4/zones/${zoneId}/settings/ssl`, {
+    const sslResponse = await fetch(`https://api.cloudflare.com/client/v4/zones/${zoneId}/settings/ssl`, {
       method: 'GET',
       headers: headers
     });
-    if (sslResponse) {
-      settings.ssl_mode = sslResponse.value;
+    if (sslResponse.ok) {
+      const sslData = await sslResponse.json();
+      settings.ssl_mode = sslData.result.value;
     }
     
     // Minimum TLS Version
-    const tlsVersionResponse = await httpsRequest(`https://api.cloudflare.com/client/v4/zones/${zoneId}/settings/min_tls_version`, {
+    const tlsVersionResponse = await fetch(`https://api.cloudflare.com/client/v4/zones/${zoneId}/settings/min_tls_version`, {
       method: 'GET',
       headers: headers
     });
-    if (tlsVersionResponse) {
-      settings.min_tls_version = tlsVersionResponse.value;
+    if (tlsVersionResponse.ok) {
+      const tlsVersionData = await tlsVersionResponse.json();
+      settings.min_tls_version = tlsVersionData.result.value;
     }
     
     // Always Use HTTPS
-    const httpsResponse = await httpsRequest(`https://api.cloudflare.com/client/v4/zones/${zoneId}/settings/always_use_https`, {
+    const httpsResponse = await fetch(`https://api.cloudflare.com/client/v4/zones/${zoneId}/settings/always_use_https`, {
       method: 'GET',
       headers: headers
     });
-    if (httpsResponse) {
-      settings.always_use_https = httpsResponse.value;
+    if (httpsResponse.ok) {
+      const httpsData = await httpsResponse.json();
+      settings.always_use_https = httpsData.result.value;
     }
     
     // Opportunistic Encryption
-    const oeResponse = await httpsRequest(`https://api.cloudflare.com/client/v4/zones/${zoneId}/settings/opportunistic_encryption`, {
+    const oeResponse = await fetch(`https://api.cloudflare.com/client/v4/zones/${zoneId}/settings/opportunistic_encryption`, {
       method: 'GET',
       headers: headers
     });
-    if (oeResponse) {
-      settings.opportunistic_encryption = oeResponse.value;
+    if (oeResponse.ok) {
+      const oeData = await oeResponse.json();
+      settings.opportunistic_encryption = oeData.result.value;
     }
     
     // TLS 1.3
-    const tls13Response = await httpsRequest(`https://api.cloudflare.com/client/v4/zones/${zoneId}/settings/tls_1_3`, {
+    const tls13Response = await fetch(`https://api.cloudflare.com/client/v4/zones/${zoneId}/settings/tls_1_3`, {
       method: 'GET',
       headers: headers
     });
-    if (tls13Response) {
-      settings.tls_1_3 = tls13Response.value;
+    if (tls13Response.ok) {
+      const tls13Data = await tls13Response.json();
+      settings.tls_1_3 = tls13Data.result.value;
     }
     
     // Browser Integrity Check
-    const bicResponse = await httpsRequest(`https://api.cloudflare.com/client/v4/zones/${zoneId}/settings/browser_check`, {
+    const bicResponse = await fetch(`https://api.cloudflare.com/client/v4/zones/${zoneId}/settings/browser_check`, {
       method: 'GET',
       headers: headers
     });
-    if (bicResponse) {
-      settings.browser_check = bicResponse.value;
+    if (bicResponse.ok) {
+      const bicData = await bicResponse.json();
+      settings.browser_check = bicData.result.value;
     }
     
     // Email Obfuscation
-    const emailResponse = await httpsRequest(`https://api.cloudflare.com/client/v4/zones/${zoneId}/settings/email_obfuscation`, {
+    const emailResponse = await fetch(`https://api.cloudflare.com/client/v4/zones/${zoneId}/settings/email_obfuscation`, {
       method: 'GET',
       headers: headers
     });
-    if (emailResponse) {
-      settings.email_obfuscation = emailResponse.value;
+    if (emailResponse.ok) {
+      const emailData = await emailResponse.json();
+      settings.email_obfuscation = emailData.result.value;
     }
     
     // Security Level
-    const secLevelResponse = await httpsRequest(`https://api.cloudflare.com/client/v4/zones/${zoneId}/settings/security_level`, {
+    const secLevelResponse = await fetch(`https://api.cloudflare.com/client/v4/zones/${zoneId}/settings/security_level`, {
       method: 'GET',
       headers: headers
     });
-    if (secLevelResponse) {
-      settings.security_level = secLevelResponse.value;
+    if (secLevelResponse.ok) {
+      const secLevelData = await secLevelResponse.json();
+      settings.security_level = secLevelData.result.value;
     }
     
     return settings;

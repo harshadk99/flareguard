@@ -1,44 +1,55 @@
 # FlareGuard
 
-> Basic security auditing tool for Cloudflare zone configurations
+> 🛡️ **Cloud Security Posture Management for Cloudflare**
 
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Build Status](https://img.shields.io/badge/build-passing-brightgreen.svg)]()
 
-FlareGuard is a serverless security auditing tool that helps organizations verify their Cloudflare zone configurations against security best practices. It runs as a Cloudflare Worker, providing a dashboard to identify and remediate security gaps in your Cloudflare setup.
+## Comprehensive CSPM for Your Cloudflare Environment
+
+FlareGuard is a powerful, serverless CSPM (Cloud Security Posture Management) platform designed specifically for Cloudflare. It continuously scans your Cloudflare configurations for vulnerabilities, misconfigurations, and compliance gaps, delivering actionable insights to strengthen your security posture.
+
+**Why FlareGuard CSPM?**
+
+- 🔍 **Complete Security Visibility** - Assess your entire Cloudflare environment from zones to Zero Trust
+- 🚀 **Zero Infrastructure** - Runs entirely as a Cloudflare Worker with no backend servers
+- 📊 **Actionable Insights** - Get a security score and prioritized recommendations
+- 🔐 **Compliance Ready** - Compare your settings against industry security standards
+- 🏆 **NIST Mapped** - All findings mapped to NIST security controls
+- 🔄 **Expandable Coverage** - Currently focused on zone security with roadmap for Zero Trust, Access, and more
 
 ## Current Status
 
-FlareGuard is currently in early development. The core functionality for basic zone security auditing is working, and we're actively expanding capabilities.
+FlareGuard CSPM is in active development. Our modular architecture allows us to expand security coverage across the Cloudflare ecosystem.
 
 ### What's Working
 
-- ✅ Basic zone security settings auditing
-- ✅ Real-time API integration for core settings
-- ✅ Security scoring based on implemented checks
-- ✅ Basic remediation guidance
+- ✅ Zone security posture assessment
+- ✅ Real-time API integration for configuration analysis
+- ✅ Security scoring with compliance mapping
+- ✅ Detailed remediation guidance
 - ✅ NIST controls mapping
 
 ### On Our Roadmap (Community Contributions Welcome!)
 
-- 🚀 Advanced security checks (WAF, Rate Limiting, DNSSEC, etc.)
-- 🚀 Zero Trust security auditing
-- 🚀 Multi-zone support
-- 🚀 Historical data tracking
+- 🚀 Advanced zone security checks (WAF, Rate Limiting, DNSSEC, etc.)
+- 🚀 Zero Trust security posture assessment
+- 🚀 Multi-zone management for enterprise environments
+- 🚀 Historical security posture tracking
 
 We welcome community contributions to help build these features! See our [Contributing](#contributing) section below.
 
 ## Future Vision
 
-Our vision for FlareGuard is to evolve into a comprehensive Cloud Security Posture Management (CSPM) tool for Cloudflare. Check out our [landing page mockup](./landing_page_update.html) to see the planned user interface with enhanced features.
+Our vision for FlareGuard is to become the definitive CSPM platform for the entire Cloudflare ecosystem. Beyond zone security, we're building a comprehensive solution that provides security visibility across all Cloudflare services. Check out our [landing page mockup](./landing_page_update.html) to see the planned user interface with enhanced features.
 
 ### Planned Enhancements
 
-- **Modern Dashboard UI** - Clean, intuitive interface with security score visualization
-- **Comprehensive Security Auditing** - Covering Zone Security, Zero Trust, and Multi-Zone management
-- **Detailed Reports** - Actionable findings with severity ratings and remediation steps
-- **Risk Prioritization** - Focus on critical issues first with clear impact assessments
-- **Tabbed Interface** - Easy navigation between different security aspects
+- **Enterprise CSPM Dashboard** - Unified security view across all Cloudflare services
+- **Multi-Service Coverage** - Expanding beyond zones to Zero Trust, Access, Pages, and more
+- **Advanced Risk Scoring** - Sophisticated algorithms for precise security posture evaluation
+- **Compliance Reporting** - Pre-built reports for common frameworks (NIST, ISO, CIS)
+- **Automated Remediation** - One-click fixes for common security issues
 
 This vision represents where we're heading, and we welcome community contributions to help make it a reality!
 
@@ -81,13 +92,14 @@ Review the detailed results showing passed and failed checks, with remediation g
 
 ## Features
 
-- 🔍 **Basic Security Gap Analysis** - Scans Cloudflare zone configurations for security gaps
-- 🔐 **Configurable Baselines** - Compares settings against YAML-defined security baselines
-- 📊 **Security Scoring** - Calculates overall security score with detailed breakdowns
-- 🏢 **Compliance Mapping** - Maps findings to NIST security controls
-- 📝 **Remediation Guidance** - Provides actionable recommendations for each issue
-- 🔄 **Real-time Analysis** - Connects directly to Cloudflare API for up-to-date results
-- 🌐 **Serverless Architecture** - Runs entirely as a Cloudflare Worker with no backend servers
+- 🔍 **Comprehensive Security Assessment** - Analyzes Cloudflare configurations against security best practices
+- 🔐 **Customizable Security Baselines** - Compare settings against YAML-defined security baselines tailored to your needs
+- 📊 **Security Posture Scoring** - Calculates overall security score with detailed breakdowns by category
+- 🏢 **Compliance Frameworks** - Maps findings to NIST security controls for compliance reporting
+- 📝 **Actionable Remediation** - Provides step-by-step guidance to resolve each security gap
+- 🔄 **Continuous Monitoring** - Connects directly to Cloudflare API for up-to-date assessment
+- 🌐 **Serverless Architecture** - Runs entirely as a Cloudflare Worker with no infrastructure to maintain
+- 🔌 **Extensible Platform** - Modular design allows for expanding coverage to additional Cloudflare services
 
 ## Architecture
 

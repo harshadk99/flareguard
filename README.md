@@ -4,6 +4,9 @@
 
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Build Status](https://img.shields.io/badge/build-passing-brightgreen.svg)]()
+[![Live Demo](https://img.shields.io/badge/demo-live-brightgreen.svg)](https://flareguard.harshad-surfer.workers.dev/)
+
+**[✨ Try FlareGuard Live Demo](https://flareguard.harshad-surfer.workers.dev/)**
 
 ## Comprehensive CSPM for Your Cloudflare Environment
 
@@ -37,7 +40,7 @@ FlareGuard CSPM is in active development. Our modular architecture allows us to 
 - 🚀 Multi-zone management for enterprise environments
 - 🚀 Historical security posture tracking
 
-We welcome community contributions to help build these features! See our [Contributing](#contributing) section below.
+See our detailed [roadmap.md](roadmap.md) file for our development plans and how you can contribute.
 
 ## Future Vision
 
@@ -51,7 +54,7 @@ Our vision for FlareGuard is to become the definitive CSPM platform for the enti
 - **Compliance Reporting** - Pre-built reports for common frameworks (NIST, ISO, CIS)
 - **Automated Remediation** - One-click fixes for common security issues
 
-This vision represents where we're heading, and we welcome community contributions to help make it a reality!
+We welcome community contributions to help make this vision a reality!
 
 ## How It Works
 
@@ -271,10 +274,6 @@ We welcome and encourage contributions from the community! FlareGuard is an open
 - Join our community discussions in the Issues section
 
 For major changes, please open an issue first to discuss what you'd like to change.
-
-## Roadmap
-
-See the [roadmap.md](roadmap.md) file for planned enhancements.
 
 ## License
 

@@ -281,16 +281,6 @@ We welcome and encourage contributions from the community! FlareGuard is an open
 
 For major changes, please open an issue first to discuss what you'd like to change.
 
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## Acknowledgments
-
-- Cloudflare for their excellent API documentation
-- The security community for defining best practices
-- All contributors who help improve this tool 
-
 ## Testing with Environment Variables
 
 For local testing and development, you can use environment variables to securely store your Cloudflare credentials:
@@ -306,4 +296,14 @@ For local testing and development, you can use environment variables to securely
    npm run test:env
    ```
 
-The `.env` file is automatically added to `.gitignore` to prevent accidentally committing your credentials to the repository. 
+The `.env` file is automatically added to `.gitignore` to prevent accidentally committing your credentials to the repository.
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Acknowledgments
+
+- Cloudflare for their excellent API documentation
+- The security community for defining best practices
+- All contributors who help improve this tool 

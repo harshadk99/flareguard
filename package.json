@@ -9,6 +9,8 @@
     "deploy": "wrangler deploy",
     "test:zero-trust": "node test_zero_trust.js",
     "test:multi-zone": "node test_multi_zone.js",
+    "test:env": "node test_env.js",
+    "setup:env": "node update_env.js",
     "verify:working": "chmod +x ./verify_working.sh && ./verify_working.sh",
     "verify:settings": "chmod +x ./verify_settings.sh && ./verify_settings.sh",
     "preview-dashboard": "open multi_zone_dashboard.html"
@@ -22,6 +24,7 @@
   "author": "Harshad Kadam",
   "license": "MIT",
   "dependencies": {
+    "dotenv": "^16.3.1",
     "js-yaml": "^4.1.0",
     "node-fetch": "^3.3.2"
   }

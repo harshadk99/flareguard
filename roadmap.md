@@ -1,13 +1,39 @@
 # FlareGuard Expansion Roadmap
 
 ## Current Capabilities
-- Basic zone security settings assessment (SSL/TLS, Security Level, etc.)
-- Single zone evaluation
-- Simulated data based on verified API calls
-- Security score calculation
-- Basic remediation recommendations
+- ✅ Basic zone security settings assessment (SSL/TLS, Security Level, etc.)
+- ✅ Single zone evaluation
+- ✅ Real-time API integration for core settings
+- ✅ Security score calculation
+- ✅ Basic remediation recommendations
 
-## Phase 1: Multi-Zone Support
+## Community Development Opportunities
+
+FlareGuard is an open-source project, and we welcome contributions from the community! Below are the key areas where you can help expand the project's capabilities.
+
+## Phase 1: Advanced Zone Security Checks
+
+### Features to Add
+- **WAF Evaluation**: Implement checks for WAF configuration and rule sets
+- **Rate Limiting**: Verify rate limiting rules are properly configured
+- **DNSSEC**: Check if DNSSEC is enabled and properly configured
+- **Bot Management**: Verify bot protection settings
+- **Certificate Management**: Check certificate expiration and cipher suites
+- **Country Blocking**: Verify geographic-based firewall rules
+
+### Implementation Plan
+1. Create helper functions for Cloudflare API calls
+2. Implement each check as a separate function
+3. Add remediation guidance for each check
+4. Update the UI to display the new checks
+
+### How You Can Contribute
+- Pick one of the security checks to implement
+- Create helper functions for API calls
+- Write tests for the new checks
+- Improve error handling and resilience
+
+## Phase 2: Multi-Zone Support
 
 ### Features to Add
 - **Zone listing endpoint**: Allow users to list all their zones
@@ -21,7 +47,13 @@
 - `POST /audit/bulk` - Run audit across multiple/all zones
 - `GET /dashboard/multi-zone` - Multi-zone dashboard view
 
-## Phase 2: Zero Trust Evaluation
+### How You Can Contribute
+- Implement zone listing functionality
+- Design multi-zone dashboard UI
+- Create bulk audit processing logic
+- Develop comparative reporting features
+
+## Phase 3: Zero Trust Evaluation
 
 ### Features to Add
 - **Identity provider checks**: Verify secure IdP configuration
@@ -44,25 +76,11 @@
 - Access policy best practices
 - Authentication strength guidelines
 
-## Phase 3: Access App Security Assessment
-
-### Features to Add
-- **App inventory**: List all Access applications
-- **Authentication evaluation**: Check authentication methods per app
-- **Policy evaluation**: Assess each app's policy security
-- **Least privilege checks**: Identify overly permissive policies
-- **Session management**: Verify appropriate session settings
-- **Identity risks**: Highlight potential identity vulnerabilities
-
-### API Endpoints Needed
-- `GET /zerotrust/access/apps` - List and evaluate Access apps
-- `GET /zerotrust/access/apps/{app-id}/policies` - Evaluate app-specific policies
-- `POST /audit/access-apps` - Audit Access apps specifically
-
-### Security Baselines to Add
-- Access app security benchmarks
-- Policy templates for different sensitivity levels
-- Session duration recommendations by app type
+### How You Can Contribute
+- Develop Zero Trust module structure
+- Implement Access application checks
+- Create identity provider evaluation logic
+- Design Zero Trust security baseline YAML
 
 ## Phase 4: Comprehensive Dashboard & Reporting
 
@@ -81,6 +99,12 @@
 4. Add compliance mapping database
 5. Build scheduler for automated assessments
 
+### How You Can Contribute
+- Design improved dashboard UI
+- Implement export functionality
+- Create data visualization components
+- Develop compliance mapping logic
+
 ## Technical Requirements
 - Enhanced API token permissions (account-level access)
 - Long-term storage for trend analysis
@@ -88,36 +112,15 @@
 - Improved authentication for the dashboard
 - Rate limiting consideration for bulk operations
 
-## Initial Zero Trust Checks to Implement
+## Getting Started with Contributing
 
-1. **ZT-ACCESS-001**: Verify MFA is required for all Access applications
-   - Severity: HIGH
-   - Remediation: Enable MFA for all Access apps
+1. **Fork the repository**
+2. **Pick an item from the roadmap**
+3. **Create a feature branch**
+   ```bash
+   git checkout -b feature/your-chosen-feature
+   ```
+4. **Implement your changes**
+5. **Submit a pull request**
 
-2. **ZT-ACCESS-002**: Check for appropriate session durations
-   - Severity: MEDIUM
-   - Remediation: Set session duration to 8 hours maximum for standard apps
-
-3. **ZT-ACCESS-003**: Verify device posture checks are implemented
-   - Severity: HIGH
-   - Remediation: Enable at least basic device posture checks
-
-4. **ZT-ACCESS-004**: Check for "Allow All" policies
-   - Severity: HIGH
-   - Remediation: Replace "Allow All" with specific inclusion policies
-
-5. **ZT-ACCESS-005**: Verify Identity Provider security
-   - Severity: CRITICAL
-   - Remediation: Use secure IdP configurations with MFA support
-
-6. **ZT-ACCESS-006**: Check for browser isolation on sensitive apps
-   - Severity: MEDIUM
-   - Remediation: Enable browser isolation for sensitive applications
-
-7. **ZT-ACCESS-007**: Verify geo-restrictions on appropriate apps
-   - Severity: MEDIUM
-   - Remediation: Implement geo-restrictions for sensitive applications
-
-8. **ZT-ACCESS-008**: Check for approval groups on critical applications
-   - Severity: HIGH
-   - Remediation: Implement approval workflows for critical app access 
+We're happy to provide guidance and support for contributors. Feel free to open an issue to discuss your ideas before starting development! 

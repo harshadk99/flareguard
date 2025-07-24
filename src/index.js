@@ -1,6 +1,13 @@
 /**
  * FlareGuard Cloudflare Worker
  * Security auditing tool for Cloudflare configurations
+ * 
+ * SECURITY NOTES:
+ * 1. This code handles API tokens which should be treated as sensitive credentials
+ * 2. API tokens are never stored persistently and are only used for the duration of the audit
+ * 3. All processing happens at request time in the Cloudflare Worker
+ * 4. The UI uses type="password" fields to protect token visibility
+ * 5. Input validation is performed on all user-provided data
  */
 
 // Import dependencies
@@ -77,6 +84,9 @@ const BASELINE_YAML = `# FlareGuard Security Baseline Checks - Sample subset
  * @param {string} zoneId - Cloudflare Zone ID
  * @param {string} apiToken - Cloudflare API Token
  * @returns {Object} Audit results
+ * 
+ * SECURITY: This function validates inputs and uses the API token only for the duration
+ * of the audit. The token is never stored persistently.
  */
 async function auditZone(zoneId, apiToken) {
   try {
@@ -121,6 +131,9 @@ async function auditZone(zoneId, apiToken) {
  * @param {string} zoneId - Cloudflare Zone ID
  * @param {string} apiToken - Cloudflare API Token
  * @returns {Object} Working settings
+ * 
+ * SECURITY: This function makes authenticated API calls to Cloudflare.
+ * The API token is passed in the Authorization header and never logged or stored.
  */
 async function fetchWorkingSettings(zoneId, apiToken) {
   try {
@@ -137,9 +150,8 @@ async function fetchWorkingSettings(zoneId, apiToken) {
       method: 'GET',
       headers: headers
     });
-    if (sslResponse.ok) {
-      const sslData = await sslResponse.json();
-      settings.ssl_mode = sslData.result.value;
+    if (sslResponse) {
+      settings.ssl_mode = sslResponse.value;
     }
     
     // Minimum TLS Version
@@ -147,9 +159,8 @@ async function fetchWorkingSettings(zoneId, apiToken) {
       method: 'GET',
       headers: headers
     });
-    if (tlsVersionResponse.ok) {
-      const tlsVersionData = await tlsVersionResponse.json();
-      settings.min_tls_version = tlsVersionData.result.value;
+    if (tlsVersionResponse) {
+      settings.min_tls_version = tlsVersionResponse.value;
     }
     
     // Always Use HTTPS
@@ -157,9 +168,8 @@ async function fetchWorkingSettings(zoneId, apiToken) {
       method: 'GET',
       headers: headers
     });
-    if (httpsResponse.ok) {
-      const httpsData = await httpsResponse.json();
-      settings.always_use_https = httpsData.result.value;
+    if (httpsResponse) {
+      settings.always_use_https = httpsResponse.value;
     }
     
     // Opportunistic Encryption
@@ -167,9 +177,8 @@ async function fetchWorkingSettings(zoneId, apiToken) {
       method: 'GET',
       headers: headers
     });
-    if (oeResponse.ok) {
-      const oeData = await oeResponse.json();
-      settings.opportunistic_encryption = oeData.result.value;
+    if (oeResponse) {
+      settings.opportunistic_encryption = oeResponse.value;
     }
     
     // TLS 1.3
@@ -177,9 +186,8 @@ async function fetchWorkingSettings(zoneId, apiToken) {
       method: 'GET',
       headers: headers
     });
-    if (tls13Response.ok) {
-      const tls13Data = await tls13Response.json();
-      settings.tls_1_3 = tls13Data.result.value;
+    if (tls13Response) {
+      settings.tls_1_3 = tls13Response.value;
     }
     
     // Browser Integrity Check
@@ -187,9 +195,8 @@ async function fetchWorkingSettings(zoneId, apiToken) {
       method: 'GET',
       headers: headers
     });
-    if (bicResponse.ok) {
-      const bicData = await bicResponse.json();
-      settings.browser_check = bicData.result.value;
+    if (bicResponse) {
+      settings.browser_check = bicResponse.value;
     }
     
     // Email Obfuscation
@@ -197,9 +204,8 @@ async function fetchWorkingSettings(zoneId, apiToken) {
       method: 'GET',
       headers: headers
     });
-    if (emailResponse.ok) {
-      const emailData = await emailResponse.json();
-      settings.email_obfuscation = emailData.result.value;
+    if (emailResponse) {
+      settings.email_obfuscation = emailResponse.value;
     }
     
     // Security Level
@@ -207,9 +213,8 @@ async function fetchWorkingSettings(zoneId, apiToken) {
       method: 'GET',
       headers: headers
     });
-    if (secLevelResponse.ok) {
-      const secLevelData = await secLevelResponse.json();
-      settings.security_level = secLevelData.result.value;
+    if (secLevelResponse) {
+      settings.security_level = secLevelResponse.value;
     }
     
     return settings;
@@ -841,6 +846,10 @@ function generateHtmlReport(results) {
 
 /**
  * Handle test connection endpoint - simplified version
+ * 
+ * SECURITY: This function validates the format of user-provided credentials
+ * before attempting to use them. It performs input validation to prevent
+ * injection attacks and ensures the API token meets minimum security requirements.
  */
 async function handleTestConnection(request) {
   try {
@@ -911,6 +920,12 @@ async function handleTestConnection(request) {
 
 /**
  * Main request handler for FlareGuard worker
+ * 
+ * SECURITY: This function handles all incoming requests and ensures:
+ * 1. Proper input validation for all user-provided data
+ * 2. API tokens are only used for the duration of the request
+ * 3. No sensitive data is stored persistently
+ * 4. Appropriate error handling to prevent information disclosure
  */
 async function handleRequest(request, env, ctx) {
   const url = new URL(request.url);

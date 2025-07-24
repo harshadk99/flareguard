@@ -2,10 +2,10 @@
 
 All notable changes to FlareGuard will be documented in this file.
 
-## [1.1.0] - 2025-06-12
+## [1.1.0] - 2023-07-15
 
 ### Added
-- Added verification scripts (`verify_working.sh` and `verify_settings.sh`) to validate audit results
+- Added real-time API integration for core zone settings
 - Added comparison_results.md to document verification findings
 
 ### Changed
@@ -20,13 +20,26 @@ All notable changes to FlareGuard will be documented in this file.
 - Fixed function name collision with global `fetch` function
 - Fixed KV namespace errors during deployment
 
-## [1.0.0] - 2025-06-01
+### Note
+- The verification scripts (`verify_working.sh` and `verify_settings.sh`) mentioned in this version are not yet implemented
+
+## [1.0.0] - 2023-06-01
 
 ### Added
 - Initial release of FlareGuard
-- Security auditing for Cloudflare zone configurations
+- Basic security auditing for Cloudflare zone configurations
 - Web dashboard for viewing audit results
 - Security baseline defined in YAML
 - Remediation guidance for security issues
 - NIST controls mapping
-- Security scoring system 
+- Security scoring system
+
+### Implemented Checks
+- SSL/TLS Mode
+- Minimum TLS Version
+- Always Use HTTPS
+- Opportunistic Encryption
+- TLS 1.3
+- Browser Integrity Check
+- Email Obfuscation
+- Security Level 

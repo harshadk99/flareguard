@@ -236,3 +236,12 @@ verify_working.sh
 multi_zone_module.js
 zero_trust_implementation.js
 zero_trust_module.js.DS_Store
+
+# Environment variables
+.env
+
+# Security audit results
+audit_results.json
+
+# macOS specific files
+.DS_Store

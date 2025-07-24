@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FlareGuard - Cloudflare Security Auditing Tool</title>
+  <style>
+    :root {
+      --primary-color: #f38020;
+      --secondary-color: #faad3f;
+      --dark-color: #404041;
+      --light-color: #f6f6f6;
+      --success-color: #4CAF50;
+      --warning-color: #FFC107;
+      --danger-color: #ff4d4d;
+      --info-color: #2196F3;
+      --card-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      --border-radius: 5px;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+      line-height: 1.6;
+      margin: 0;
+      padding: 0;
+      color: var(--dark-color);
+      background-color: var(--light-color);
+    }
+    
+    header {
+      background-color: var(--primary-color);
+      color: white;
+      padding: 1rem;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    
+    .navbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    
+    .logo {
+      font-weight: bold;
+      font-size: 1.5rem;
+      display: flex;
+      align-items: center;
+    }
+    
+    .logo-icon {
+      margin-right: 10px;
+      font-size: 24px;
+    }
+    
+    .nav-links {
+      display: flex;
+    }
+    
+    .nav-links a {
+      color: white;
+      text-decoration: none;
+      margin-left: 20px;
+      padding: 5px 10px;
+      border-radius: 4px;
+      transition: background-color 0.3s;
+    }
+    
+    .nav-links a:hover {
+      background-color: rgba(255,255,255,0.1);
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem 1rem;
+    }
+    
+    .hero {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 3rem;
+    }
+    
+    .hero-content {
+      flex: 1;
+      padding-right: 2rem;
+    }
+    
+    .hero-image {
+      flex: 1;
+      text-align: center;
+    }
+    
+    .hero-image img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 8px;
+      box-shadow: var(--card-shadow);
+    }
+    
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+      color: var(--dark-color);
+    }
+    
+    h2 {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+      color: var(--dark-color);
+      text-align: center;
+    }
+    
+    h3 {
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
+      color: var(--dark-color);
+    }
+    
+    p {
+      margin-bottom: 1rem;
+    }
+    
+    .btn {
+      display: inline-block;
+      background-color: var(--primary-color);
+      color: white;
+      padding: 0.8rem 1.5rem;
+      text-decoration: none;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: 500;
+      transition: background-color 0.3s;
+    }
+    
+    .btn:hover {
+      background-color: var(--secondary-color);
+    }
+    
+    .btn-secondary {
+      background-color: var(--dark-color);
+    }
+    
+    .btn-secondary:hover {
+      background-color: #555;
+    }
+    
+    .btn-group {
+      display: flex;
+      gap: 10px;
+      margin-top: 1.5rem;
+    }
+    
+    .features {
+      margin-bottom: 3rem;
+    }
+    
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+      gap: 20px;
+      margin-top: 2rem;
+    }
+    
+    .feature-card {
+      background-color: white;
+      border-radius: var(--border-radius);
+      box-shadow: var(--card-shadow);
+      padding: 1.5rem;
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+    
+    .feature-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    }
+    
+    .feature-icon {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+      color: var(--primary-color);
+    }
+    
+    .demo-section {
+      background-color: white;
+      border-radius: var(--border-radius);
+      box-shadow: var(--card-shadow);
+      padding: 2rem;
+      margin-bottom: 3rem;
+    }
+    
+    .tabs {
+      display: flex;
+      margin-bottom: 20px;
+      border-bottom: 1px solid #eee;
+    }
+    
+    .tab {
+      padding: 10px 20px;
+      cursor: pointer;
+      border-bottom: 3px solid transparent;
+      transition: all 0.3s;
+    }
+    
+    .tab.active {
+      border-bottom: 3px solid var(--primary-color);
+      font-weight: 500;
+    }
+    
+    .tab:hover:not(.active) {
+      border-bottom: 3px solid var(--secondary-color);
+    }
+    
+    .tab-content {
+      display: none;
+    }
+    
+    .tab-content.active {
+      display: block;
+    }
+    
+    .demo-dashboard {
+      border: 1px solid #eee;
+      border-radius: var(--border-radius);
+      padding: 1rem;
+      margin-top: 1rem;
+    }
+    
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 15px;
+      margin-bottom: 2rem;
+    }
+    
+    .stat-card {
+      background-color: var(--light-color);
+      border-radius: var(--border-radius);
+      padding: 1.5rem;
+      text-align: center;
+    }
+    
+    .stat-value {
+      font-size: 2.5rem;
+      font-weight: bold;
+      margin-bottom: 0.5rem;
+    }
+    
+    .stat-title {
+      font-size: 0.9rem;
+      color: #666;
+    }
+    
+    .result-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1rem;
+    }
+    
+    .result-table th,
+    .result-table td {
+      padding: 10px 15px;
+      border-bottom: 1px solid #eee;
+      text-align: left;
+    }
+    
+    .result-table th {
+      background-color: #f9f9f9;
+      font-weight: 600;
+    }
+    
+    .status-pill {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 500;
+    }
+    
+    .status-pass {
+      background-color: rgba(76, 175, 80, 0.1);
+      color: var(--success-color);
+    }
+    
+    .status-fail {
+      background-color: rgba(255, 77, 77, 0.1);
+      color: var(--danger-color);
+    }
+    
+    .status-warning {
+      background-color: rgba(255, 193, 7, 0.1);
+      color: var(--warning-color);
+    }
+    
+    footer {
+      background-color: var(--dark-color);
+      color: white;
+      padding: 2rem 0;
+      text-align: center;
+    }
+    
+    .footer-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 1rem;
+    }
+    
+    .footer-links {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 1rem;
+    }
+    
+    .footer-links a {
+      color: white;
+      margin: 0 15px;
+      text-decoration: none;
+    }
+    
+    .footer-links a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="navbar">
+      <div class="logo">
+        <span class="logo-icon">🛡️</span>
+        FlareGuard
+      </div>
+      <div class="nav-links">
+        <a href="#features">Features</a>
+        <a href="#demo">Demo</a>
+        <a href="#get-started">Get Started</a>
+      </div>
+    </div>
+  </header>
+  
+  <main>
+    <div class="container">
+      <section class="hero">
+        <div class="hero-content">
+          <h1>Comprehensive Security Auditing for Cloudflare</h1>
+          <p>FlareGuard is a powerful security auditing tool that helps you identify vulnerabilities and misconfigurations in your Cloudflare setup. Get actionable recommendations to improve your security posture.</p>
+          <div class="btn-group">
+            <a href="#demo" class="btn">View Demo</a>
+            <a href="#get-started" class="btn btn-secondary">Get Started</a>
+          </div>
+        </div>
+        <div class="hero-image">
+          <img src="https://via.placeholder.com/500x300?text=FlareGuard+Dashboard" alt="FlareGuard Dashboard">
+        </div>
+      </section>
+      
+      <section id="features" class="features">
+        <h2>Comprehensive Security Auditing</h2>
+        <div class="features-grid">
+          <div class="feature-card">
+            <div class="feature-icon">🔒</div>
+            <h3>Zone Security</h3>
+            <p>Audit SSL/TLS settings, WAF configuration, DNSSEC, security headers, and more across all your Cloudflare zones.</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">🔐</div>
+            <h3>Zero Trust Security</h3>
+            <p>Evaluate Access applications, identity providers, device posture, and Gateway configurations against security best practices.</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">🌐</div>
+            <h3>Multi-Zone Management</h3>
+            <p>Audit multiple zones simultaneously, compare security posture, and identify common issues across your organization.</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">📊</div>
+            <h3>Comprehensive Reporting</h3>
+            <p>Get detailed reports with actionable recommendations and security scores to track your progress over time.</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">⚠️</div>
+            <h3>Risk Prioritization</h3>
+            <p>Focus on critical issues first with clear severity ratings and impact assessments for each finding.</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">📱</div>
+            <h3>Access App Security</h3>
+            <p>Verify MFA requirements, session durations, and policy configurations for all your Access applications.</p>
+          </div>
+        </div>
+      </section>
+      
+      <section id="demo" class="demo-section">
+        <h2>See FlareGuard in Action</h2>
+        <p>Explore sample security audit results for different Cloudflare configurations.</p>
+        
+        <div class="tabs">
+          <div class="tab active" onclick="openTab(event, 'zone-security')">Zone Security</div>
+          <div class="tab" onclick="openTab(event, 'zero-trust')">Zero Trust</div>
+          <div class="tab" onclick="openTab(event, 'multi-zone')">Multi-Zone</div>
+        </div>
+        
+        <div id="zone-security" class="tab-content active">
+          <h3>Zone Security Audit</h3>
+          <div class="demo-dashboard">
+            <div class="stats-grid">
+              <div class="stat-card">
+                <div class="stat-value">78%</div>
+                <div class="stat-title">Security Score</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-value">14</div>
+                <div class="stat-title">Total Checks</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-value">9</div>
+                <div class="stat-title">Passed</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-value">3</div>
+                <div class="stat-title">Failed</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-value">2</div>
+                <div class="stat-title">Warnings</div>
+              </div>
+            </div>
+            
+            <h4>Security Findings</h4>
+            <table class="result-table">
+              <thead>
+                <tr>
+                  <th>Check</th>
+                  <th>Status</th>
+                  <th>Severity</th>
+                  <th>Details</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>SSL/TLS Mode</td>
+                  <td><span class="status-pill status-fail">FAIL</span></td>
+                  <td>Critical</td>
+                  <td>Current: Flexible. Recommended: Full (Strict)</td>
+                </tr>
+                <tr>
+                  <td>Minimum TLS Version</td>
+                  <td><span class="status-pill status-fail">FAIL</span></td>
+                  <td>High</td>
+                  <td>Current: 1.0. Recommended: 1.2 or higher</td>
+                </tr>
+                <tr>
+                  <td>Always Use HTTPS</td>
+                  <td><span class="status-pill status-pass">PASS</span></td>
+                  <td>High</td>
+                  <td>Always Use HTTPS is enabled</td>
+                </tr>
+                <tr>
+                  <td>Browser Integrity Check</td>
+                  <td><span class="status-pill status-pass">PASS</span></td>
+                  <td>Medium</td>
+                  <td>Browser Integrity Check is enabled</td>
+                </tr>
+                <tr>
+                  <td>DNSSEC</td>
+                  <td><span class="status-pill status-warning">WARNING</span></td>
+                  <td>Medium</td>
+                  <td>DNSSEC is not enabled</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        
+        <div id="zero-trust" class="tab-content">
+          <h3>Zero Trust Security Audit</h3>
+          <div class="demo-dashboard">
+            <div class="stats-grid">
+              <div class="stat-card">
+                <div class="stat-value">82%</div>
+                <div class="stat-title">Security Score</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-value">5</div>
+                <div class="stat-title">Applications</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-value">22</div>
+                <div class="stat-title">Passed</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-value">3</div>
+                <div class="stat-title">Failed</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-value">5</div>
+                <div class="stat-title">Warnings</div>
+              </div>
+            </div>
+            
+            <h4>Access Applications</h4>
+            <table class="result-table">
+              <thead>
+                <tr>
+                  <th>Application</th>
+                  <th>Issue</th>
+                  <th>Severity</th>
+                  <th>Recommendation</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Admin Portal</td>
+                  <td><span class="status-pill status-fail">FAIL</span> Missing MFA</td>
+                  <td>Critical</td>
+                  <td>Enable MFA requirement for this critical application</td>
+                </tr>
+                <tr>
+                  <td>Developer Dashboard</td>
+                  <td><span class="status-pill status-warning">WARNING</span> Long Session Duration</td>
+                  <td>Medium</td>
+                  <td>Reduce session duration from 24h to 8h or less</td>
+                </tr>
+                <tr>
+                  <td>Customer Portal</td>
+                  <td><span class="status-pill status-fail">FAIL</span> "Allow All" Policy</td>
+                  <td>High</td>
+                  <td>Replace "Allow All" policy with specific inclusion rules</td>
+                </tr>
+                <tr>
+                  <td>API Documentation</td>
+                  <td><span class="status-pill status-warning">WARNING</span> No Device Posture</td>
+                  <td>Medium</td>
+                  <td>Add device posture checks to enhance security</td>
+                </tr>
+                <tr>
+                  <td>Internal Tools</td>
+                  <td><span class="status-pill status-pass">PASS</span> All checks passed</td>
+                  <td>-</td>
+                  <td>No action required</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        
+        <div id="multi-zone" class="tab-content">
+          <h3>Multi-Zone Security Audit</h3>
+          <div class="demo-dashboard">
+            <div class="stats-grid">
+              <div class="stat-card">
+                <div class="stat-value">10</div>
+                <div class="stat-title">Total Zones</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-value">76%</div>
+                <div class="stat-title">Avg. Security Score</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-value">3</div>
+                <div class="stat-title">Zones with Critical Issues</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-value">94%</div>
+                <div class="stat-title">Best Zone Score</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-value">58%</div>
+                <div class="stat-title">Worst Zone Score</div>
+              </div>
+            </div>
+            
+            <h4>Zone Overview</h4>
+            <table class="result-table">
+              <thead>
+                <tr>
+                  <th>Zone</th>
+                  <th>Score</th>
+                  <th>Critical Issues</th>
+                  <th>High Issues</th>
+                  <th>Medium Issues</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>example.com</td>
+                  <td>92%</td>
+                  <td>0</td>
+                  <td>1</td>
+                  <td>3</td>
+                </tr>
+                <tr>
+                  <td>api.example.com</td>
+                  <td>76%</td>
+                  <td>1</td>
+                  <td>3</td>
+                  <td>4</td>
+                </tr>
+                <tr>
+                  <td>app.example.com</td>
+                  <td>64%</td>
+                  <td>2</td>
+                  <td>5</td>
+                  <td>2</td>
+                </tr>
+                <tr>
+                  <td>cdn.example.com</td>
+                  <td>94%</td>
+                  <td>0</td>
+                  <td>0</td>
+                  <td>2</td>
+                </tr>
+                <tr>
+                  <td>test.example.com</td>
+                  <td>58%</td>
+                  <td>1</td>
+                  <td>6</td>
+                  <td>8</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+      
+      <section id="get-started" class="demo-section">
+        <h2>Get Started with FlareGuard</h2>
+        <p>Follow these steps to start securing your Cloudflare configuration:</p>
+        
+        <ol>
+          <li><strong>Choose an audit type:</strong>
+            <ul>
+              <li><a href="https://flareguard.harshad-surfer.workers.dev/">Zone Security Audit</a> - Audit SSL/TLS, WAF, and other zone settings</li>
+              <li><a href="https://flareguard.harshad-surfer.workers.dev/zero-trust">Zero Trust Audit</a> - Evaluate Access applications and Zero Trust configuration</li>
+              <li><a href="https://flareguard.harshad-surfer.workers.dev/multi-zone">Multi-Zone Audit</a> - Audit multiple zones at once</li>
+            </ul>
+          </li>
+          <li><strong>Create an API token:</strong>
+            <ul>
+              <li>Go to your <a href="https://dash.cloudflare.com/profile/api-tokens" target="_blank">Cloudflare dashboard</a></li>
+              <li>Create a new API token with appropriate read permissions</li>
+              <li>For Zone Security: Zone Read, SSL and Certificates Read, WAF Read, DNS Read</li>
+              <li>For Zero Trust: Account Access: Apps and Policies Read, Gateway Read</li>
+            </ul>
+          </li>
+          <li><strong>Run your first audit:</strong>
+            <ul>
+              <li>Enter your Zone ID or Account ID (depending on audit type)</li>
+              <li>Paste your API token</li>
+              <li>Click "Run Audit" to get your security assessment</li>
+            </ul>
+          </li>
+        </ol>
+        
+        <div style="text-align: center; margin-top: 2rem;">
+          <a href="https://flareguard.harshad-surfer.workers.dev/" class="btn">Go to FlareGuard</a>
+        </div>
+      </section>
+    </div>
+  </main>
+  
+  <footer>
+    <div class="footer-content">
+      <div class="footer-links">
+        <a href="#features">Features</a>
+        <a href="#demo">Demo</a>
+        <a href="#get-started">Get Started</a>
+      </div>
+      <p>&copy; 2025 FlareGuard - Cloudflare Security Auditing Tool</p>
+      <p class="disclaimer">FlareGuard is a personal project built using Cloudflare Workers and public APIs. It is not affiliated with or endorsed by Cloudflare.</p>
+    </div>
+  </footer>
+  
+  <script>
+    function openTab(evt, tabName) {
+      // Declare all variables
+      var i, tabcontent, tablinks;
+      
+      // Get all elements with class="tab-content" and hide them
+      tabcontent = document.getElementsByClassName("tab-content");
+      for (i = 0; i < tabcontent.length; i++) {
+        tabcontent[i].className = tabcontent[i].className.replace(" active", "");
+      }
+      
+      // Get all elements with class="tab" and remove the class "active"
+      tablinks = document.getElementsByClassName("tab");
+      for (i = 0; i < tablinks.length; i++) {
+        tablinks[i].className = tablinks[i].className.replace(" active", "");
+      }
+      
+      // Show the current tab, and add an "active" class to the button that opened the tab
+      document.getElementById(tabName).className += " active";
+      evt.currentTarget.className += " active";
+    }
+  </script>
+</body>
+</html> 

@@ -221,7 +221,6 @@ deploy.js
 
 # Project-specific temporary files
 FlareGuard - Cloudflare Security Auditing.html
-landing_page_update.html
 multi_zone_dashboard.html
 flareguard-worker/
 production_report.html

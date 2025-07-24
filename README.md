@@ -30,7 +30,7 @@ We welcome community contributions to help build these features! See our [Contri
 
 ## Future Vision
 
-Our vision for FlareGuard is to evolve into a comprehensive Cloud Security Posture Management (CSPM) tool for Cloudflare. Check out our [landing page mockup](landing_page_update.html) to see the planned user interface with enhanced features.
+Our vision for FlareGuard is to evolve into a comprehensive Cloud Security Posture Management (CSPM) tool for Cloudflare. Check out our [landing page mockup](./landing_page_update.html) to see the planned user interface with enhanced features.
 
 ### Planned Enhancements
 

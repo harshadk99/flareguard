@@ -8,11 +8,12 @@
 
 <div align="center">
   <br />
-  <a href="https://flareguard.harshad-surfer.workers.dev/" style="text-decoration:none;">
-    <img src="https://img.shields.io/badge/🔥_TRY_FLAREGUARD_LIVE_DEMO_🔥-FF7A59?style=for-the-badge&logo=cloudflare&logoColor=white" alt="Try FlareGuard Live Demo" />
-  </a>
-  <br />
-  <p><i>Experience the power of FlareGuard CSPM firsthand!</i></p>
+  <h1>
+    <a href="https://flareguard.harshad-surfer.workers.dev/">
+      <img src="https://img.shields.io/badge/🔥_TRY_FLAREGUARD_LIVE_DEMO_🔥-FF7A59?style=for-the-badge&logo=cloudflare&logoColor=white" alt="Try FlareGuard Live Demo" height="60" />
+    </a>
+  </h1>
+  <h3><i>Experience the power of FlareGuard CSPM firsthand!</i></h3>
   <br />
 </div>
 

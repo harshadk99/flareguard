@@ -1,4 +1,4 @@
-# FlareGuard
+# FlareGuard Edge
 
 > 🛡️ **Cloud Security Posture Management for Cloudflare**
 
@@ -14,11 +14,25 @@
   <br /><br />
 </div>
 
+## Disclaimer
+
+FlareGuard Edge is a personal, independent open-source project developed entirely in my free time as a technical experimentation and learning exercise. This project:
+
+1. Is not affiliated with, endorsed by, sponsored by, or associated with any company
+2. Has been developed exclusively using personal resources and during personal time
+3. Does not incorporate any proprietary information or trade secrets
+4. Represents solely my own intellectual property and creative work
+5. Does not utilize any company-owned equipment, software licenses, or resources
+
+This project is shared with the community in the spirit of open-source collaboration and knowledge sharing.
+
+> **Note on Name Change:** This project was previously known as "FlareGuard" and has been renamed to "FlareGuard Edge" to better reflect its focus on edge security and to avoid any potential confusion with other projects or products.
+
 ## Comprehensive CSPM for Your Cloudflare Environment
 
-FlareGuard is a powerful, serverless CSPM (Cloud Security Posture Management) platform designed specifically for Cloudflare. It continuously scans your Cloudflare configurations for vulnerabilities, misconfigurations, and compliance gaps, delivering actionable insights to strengthen your security posture.
+FlareGuard Edge is a powerful, serverless CSPM (Cloud Security Posture Management) platform designed specifically for Cloudflare. It continuously scans your Cloudflare configurations for vulnerabilities, misconfigurations, and compliance gaps, delivering actionable insights to strengthen your security posture.
 
-**Why FlareGuard CSPM?**
+**Why FlareGuard Edge CSPM?**
 
 - 🔍 **Complete Security Visibility** - Assess your entire Cloudflare environment from zones to Zero Trust
 - 🚀 **Zero Infrastructure** - Runs entirely as a Cloudflare Worker with no backend servers
@@ -29,7 +43,7 @@ FlareGuard is a powerful, serverless CSPM (Cloud Security Posture Management) pl
 
 ## Current Status
 
-FlareGuard CSPM is in active development. Our modular architecture allows us to expand security coverage across the Cloudflare ecosystem.
+FlareGuard Edge CSPM is in active development. Our modular architecture allows us to expand security coverage across the Cloudflare ecosystem.
 
 ### What's Working
 
@@ -50,7 +64,7 @@ See our detailed [roadmap.md](roadmap.md) file for our development plans and how
 
 ## Future Vision
 
-Our vision for FlareGuard is to become the definitive CSPM platform for the entire Cloudflare ecosystem. Beyond zone security, we're building a comprehensive solution that provides security visibility across all Cloudflare services. Check out our [landing page mockup](./landing_page_update.html) to see the planned user interface with enhanced features.
+Our vision for FlareGuard Edge is to become the definitive CSPM platform for the entire Cloudflare ecosystem. Beyond zone security, we're building a comprehensive solution that provides security visibility across all Cloudflare services. Check out our [landing page mockup](./landing_page_update.html) to see the planned user interface with enhanced features.
 
 ### Planned Enhancements
 
@@ -64,11 +78,11 @@ We welcome community contributions to help make this vision a reality!
 
 ## How It Works
 
-FlareGuard provides a simple workflow to audit your Cloudflare zone security settings. The screenshots below show the web interface in action.
+FlareGuard Edge provides a simple workflow to audit your Cloudflare zone security settings. The screenshots below show the web interface in action.
 
-> **Security Note:** When using FlareGuard or sharing screenshots, always redact sensitive information like Zone IDs, API tokens, and domain names. The screenshots below are examples only and should not contain real credentials.
+> **Security Note:** When using FlareGuard Edge or sharing screenshots, always redact sensitive information like Zone IDs, API tokens, and domain names. The screenshots below are examples only and should not contain real credentials.
 > 
-> **Important:** Before sharing any screenshots of your FlareGuard usage:
+> **Important:** Before sharing any screenshots of your FlareGuard Edge usage:
 > 1. Redact or blur all Zone IDs (32-character hexadecimal strings)
 > 2. Never include API tokens in screenshots
 > 3. Consider redacting domain names if they're for internal or sensitive systems
@@ -156,7 +170,7 @@ flowchart LR
 
 ## Technical Implementation
 
-FlareGuard is built as a serverless application using Cloudflare Workers, providing a lightweight yet powerful security auditing platform. Here's how it works under the hood:
+FlareGuard Edge is built as a serverless application using Cloudflare Workers, providing a lightweight yet powerful security auditing platform. Here's how it works under the hood:
 
 ### Core Components
 
@@ -164,7 +178,7 @@ FlareGuard is built as a serverless application using Cloudflare Workers, provid
    - Implements RESTful endpoints for audit, test connection, and UI serving
    - Validates input parameters and provides meaningful error responses
 
-2. **Audit Engine** - The heart of FlareGuard's security assessment
+2. **Audit Engine** - The heart of FlareGuard Edge's security assessment
    - Fetches configuration data from Cloudflare API endpoints
    - Evaluates settings against security baselines defined in YAML
    - Maps findings to NIST security controls for compliance reporting
@@ -215,8 +229,8 @@ The codebase is structured for extensibility, making it easy for contributors to
 
 1. Clone the repository
    ```bash
-   git clone https://github.com/harshadk99/flareguard.git
-   cd flareguard
+   git clone https://github.com/harshadk99/flareguard-edge.git
+   cd flareguard-edge
    ```
 
 2. Install dependencies
@@ -253,7 +267,7 @@ The audit provides results in several sections:
 
 ## Security & Privacy
 
-**FlareGuard prioritizes your security and privacy:**
+**FlareGuard Edge prioritizes your security and privacy:**
 
 - No credentials or sensitive data are stored
 - All processing happens at request time in the Cloudflare Worker
@@ -263,7 +277,7 @@ The audit provides results in several sections:
 
 ## Security Checks Currently Implemented
 
-FlareGuard currently evaluates your zone against these security best practices:
+FlareGuard Edge currently evaluates your zone against these security best practices:
 
 | Check | Recommendation | NIST Controls |
 |-------|----------------|---------------|
@@ -295,13 +309,13 @@ See our [roadmap.md](roadmap.md) for more details on how you can contribute to t
 
 ## Contributing
 
-We welcome and encourage contributions from the community! FlareGuard is an open-source project with many exciting opportunities for enhancement.
+FlareGuard Edge welcomes contributions from the community. This project thrives on open collaboration while maintaining professional standards.
 
 ### Ways to Contribute
 
-- **Implement New Security Checks**: Add one of the security checks from our community development list
+- **Implement New Security Checks**: Add security checks from our community development list
 - **Improve Documentation**: Enhance the docs, add examples, or clarify instructions
-- **Fix Bugs**: Help us identify and fix issues
+- **Fix Bugs**: Help identify and fix issues
 - **Add Features**: Implement new features from our roadmap
 - **Suggest Ideas**: Open an issue with your feature suggestions
 
@@ -322,11 +336,12 @@ We welcome and encourage contributions from the community! FlareGuard is an open
    ```
 5. **Open a Pull Request**
 
-### Getting Help
+### Code of Conduct
 
-- Check our [roadmap.md](roadmap.md) for detailed development plans
-- Open an issue to discuss your ideas before starting development
-- Join our community discussions in the Issues section
+- Be respectful and inclusive in all interactions
+- Provide constructive feedback on contributions
+- Focus on the technical merits of the code
+- Follow the established code style and patterns
 
 For major changes, please open an issue first to discuss what you'd like to change.
 
@@ -355,4 +370,8 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 - Cloudflare for their excellent API documentation
 - The security community for defining best practices
-- All contributors who help improve this tool 
+- All contributors who help improve this tool
+
+---
+
+*FlareGuard Edge is an independent open-source project created as a personal technical experiment and learning exercise. It is not affiliated with any company and has been developed using personal resources during personal time.* 

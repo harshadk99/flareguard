@@ -1,0 +1,73 @@
+# CIS Controls Version 8 — Control Reference
+# Source: https://www.cisecurity.org/controls/v8
+# Framework version: v8 (May 2021)
+# Maintained by: Center for Internet Security (CIS)
+#
+# Implementation Groups (IG):
+#   IG1 — Essential cyber hygiene, all organizations
+#   IG2 — Adds controls for organizations with moderate security resources
+#   IG3 — Adds controls for organizations with dedicated security teams
+#
+# Only controls referenced in FlareGuard's baseline are listed here.
+# When CIS publishes v9, add cis-v9.yaml and update mappings/index.yaml.
+
+framework: CIS Controls
+version: "v8"
+published: "2021-05-18"
+url: https://www.cisecurity.org/controls/v8
+
+controls:
+
+  "3.10":
+    title: Encrypt Sensitive Data in Transit
+    group: "CIS Control 3: Data Protection"
+    implementation_groups: [IG1, IG2, IG3]
+    description: >
+      Encrypt sensitive data in transit. Use TLS (transport layer security) and HTTPS
+      for all sensitive data in transit. Use HSTS (HTTP Strict Transport Security)
+      to enforce HTTPS connections and prevent protocol downgrade attacks.
+      Enable certificate transparency monitoring to detect unauthorized certificates.
+    url: https://www.cisecurity.org/controls/v8
+
+  "6.1":
+    title: Establish an Access Granting and Revoking Process
+    group: "CIS Control 6: Access Control Management"
+    implementation_groups: [IG1, IG2, IG3]
+    description: >
+      Establish and follow a process, preferably automated, for granting access to
+      enterprise assets upon new hire, rights grant, or role change of a user.
+      Revoke access in a timely manner upon termination or role change. Log all
+      access grant and revocation events.
+    url: https://www.cisecurity.org/controls/v8
+
+  "8.2":
+    title: Collect Audit Logs
+    group: "CIS Control 8: Audit Log Management"
+    implementation_groups: [IG1, IG2, IG3]
+    description: >
+      Collect audit logs. Ensure that logging, per the enterprise's audit log
+      management process, has been enabled across enterprise assets. Configure
+      Logpush or equivalent to export logs to a centralized SIEM or storage.
+      Enable Page Shield to monitor client-side scripts and detect supply chain attacks.
+    url: https://www.cisecurity.org/controls/v8
+
+  "9.3":
+    title: Maintain and Enforce Network-Based URL Filters
+    group: "CIS Control 9: Email and Web Browser Protections"
+    implementation_groups: [IG2, IG3]
+    description: >
+      Enforce and update network-based URL filters to limit an enterprise asset from
+      connecting to potentially malicious or unapproved websites. Enable hotlink
+      protection to prevent unauthorized embedding of resources from your origin.
+    url: https://www.cisecurity.org/controls/v8
+
+  "12.6":
+    title: Use of Secure Network Management and Communication Protocols
+    group: "CIS Control 12: Network Infrastructure Management"
+    implementation_groups: [IG2, IG3]
+    description: >
+      Use secure network management and communication protocols, such as HTTP/2 and
+      HTTP/3 (QUIC), which provide improved security and performance over HTTP/1.1.
+      Enable IPv6 to avoid IPv4-only connectivity constraints and prepare for
+      network evolution.
+    url: https://www.cisecurity.org/controls/v8

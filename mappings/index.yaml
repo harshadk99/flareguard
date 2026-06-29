@@ -1,0 +1,14 @@
+# FlareGuard Compliance Framework Index
+# This file declares which version of each framework is active.
+# To upgrade a framework: add the new mapping file, then change `active` here.
+
+frameworks:
+  nist_800_53:
+    active: Rev 5
+    file: nist-800-53-r5.yaml
+    next_expected: Rev 6 (no published date)
+
+  cis_controls:
+    active: v8
+    file: cis-v8.yaml
+    next_expected: v9 (no published date)

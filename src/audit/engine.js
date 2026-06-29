@@ -1,5 +1,6 @@
 import yaml from 'js-yaml';
 import { CloudflareAPI } from '../utils/cf-api.js';
+import { resolveControls, FRAMEWORK_VERSIONS } from '../utils/mappings.js';
 import { evaluateZoneSetting } from './evaluators/zone-setting.js';
 import { evaluateWAF } from './evaluators/waf.js';
 import { evaluateDNSSEC } from './evaluators/dnssec.js';
@@ -76,23 +77,26 @@ export async function runAccountAudit(accountId, apiToken, env, cache) {
 // ── Dispatcher ─────────────────────────────────────────────────────────────────
 
 async function dispatch(check, api, zoneId, accountId, _cache) {
+  let finding;
   try {
     switch (check.service) {
-      case 'zone-setting': return evaluateZoneSetting(check, api, zoneId);
-      case 'waf':          return evaluateWAF(check, api, zoneId);
-      case 'dnssec':       return evaluateDNSSEC(check, api, zoneId);
-      case 'bot':          return evaluateBot(check, api, zoneId);
-      case 'rate-limit':   return evaluateRateLimit(check, api, zoneId);
-      case 'access':       return evaluateAccess(check, api, zoneId, accountId);
-      case 'workers':      return evaluateWorkers(check, api, zoneId, accountId);
-      case 'page-shield':  return evaluatePageShield(check, api, zoneId);
-      case 'logpush':      return evaluateLogpush(check, api, zoneId, accountId);
+      case 'zone-setting': finding = await evaluateZoneSetting(check, api, zoneId); break;
+      case 'waf':          finding = await evaluateWAF(check, api, zoneId); break;
+      case 'dnssec':       finding = await evaluateDNSSEC(check, api, zoneId); break;
+      case 'bot':          finding = await evaluateBot(check, api, zoneId); break;
+      case 'rate-limit':   finding = await evaluateRateLimit(check, api, zoneId); break;
+      case 'access':       finding = await evaluateAccess(check, api, zoneId, accountId); break;
+      case 'workers':      finding = await evaluateWorkers(check, api, zoneId, accountId); break;
+      case 'page-shield':  finding = await evaluatePageShield(check, api, zoneId); break;
+      case 'logpush':      finding = await evaluateLogpush(check, api, zoneId, accountId); break;
       default:
-        return naResult(check, `Service "${check.service}" not implemented.`);
+        finding = naResult(check, `Service "${check.service}" not implemented.`);
     }
   } catch (err) {
-    return naResult(check, `Evaluator threw an unexpected error: ${err.message}`);
+    finding = naResult(check, `Evaluator threw an unexpected error: ${err.message}`);
   }
+  finding.resolved_controls = resolveControls(check.nist_controls, check.cis_controls);
+  return finding;
 }
 
 function naResult(check, message) {
@@ -120,6 +124,7 @@ function buildReport(zone, findings, accountId) {
     zone_id: zone.id,
     zone_name: zone.name,
     account_id: accountId ?? zone.account?.id ?? null,
+    framework_versions: FRAMEWORK_VERSIONS,
     summary: { total_checks: findings.length, passed, failed, warnings, na, score },
     findings,
   };

@@ -1,0 +1,222 @@
+# NIST SP 800-53 Revision 5 — Control Reference
+# Source: https://csrc.nist.gov/publications/detail/sp/800-53/rev-5/final
+# Framework version: Rev 5 (September 2020, updated Dec 2020)
+# Maintained by: NIST Computer Security Resource Center (CSRC)
+#
+# Only controls referenced in FlareGuard's baseline are listed here.
+# When NIST publishes Rev 6, add a new mapping file (nist-800-53-r6.yaml)
+# and update mappings/index.yaml to point the active version.
+
+framework: NIST SP 800-53
+version: "Rev 5"
+published: "2020-09-23"
+url: https://csrc.nist.gov/publications/detail/sp/800-53/rev-5/final
+
+controls:
+
+  AC-3:
+    title: Access Enforcement
+    family: Access Control
+    description: >
+      Enforce approved authorizations for logical access to information and system
+      resources in accordance with applicable access control policies.
+    url: https://csrc.nist.gov/Projects/risk-management/sp800-53-controls/release-search#!/controls?version=5.1&search=AC-3
+
+  AU-2:
+    title: Event Logging
+    family: Audit and Accountability
+    description: >
+      Identify the types of events that the system is capable of logging in support
+      of the audit function; coordinate the event logging function with other
+      organizations requiring audit-related information.
+    url: https://csrc.nist.gov/Projects/risk-management/sp800-53-controls/release-search#!/controls?version=5.1&search=AU-2
+
+  AU-9:
+    title: Protection of Audit Information
+    family: Audit and Accountability
+    description: >
+      Protect audit information and audit tools from unauthorized access,
+      modification, and deletion.
+    url: https://csrc.nist.gov/Projects/risk-management/sp800-53-controls/release-search#!/controls?version=5.1&search=AU-9
+
+  CM-2:
+    title: Baseline Configuration
+    family: Configuration Management
+    description: >
+      Develop, document, and maintain under configuration control, a current baseline
+      configuration of the system.
+    url: https://csrc.nist.gov/Projects/risk-management/sp800-53-controls/release-search#!/controls?version=5.1&search=CM-2
+
+  CM-6:
+    title: Configuration Settings
+    family: Configuration Management
+    description: >
+      Establish and document configuration settings for technology products employed
+      within the system that reflect the most restrictive mode consistent with
+      operational requirements.
+    url: https://csrc.nist.gov/Projects/risk-management/sp800-53-controls/release-search#!/controls?version=5.1&search=CM-6
+
+  CM-7:
+    title: Least Functionality
+    family: Configuration Management
+    description: >
+      Configure the system to provide only essential capabilities, prohibiting or
+      restricting the use of functions, ports, protocols, and services not required.
+    url: https://csrc.nist.gov/Projects/risk-management/sp800-53-controls/release-search#!/controls?version=5.1&search=CM-7
+
+  CM-8:
+    title: System Component Inventory
+    family: Configuration Management
+    description: >
+      Develop and document an inventory of system components that accurately reflects
+      the system; includes all components within the authorization boundary of the system.
+    url: https://csrc.nist.gov/Projects/risk-management/sp800-53-controls/release-search#!/controls?version=5.1&search=CM-8
+
+  IA-2:
+    title: Identification and Authentication (Organizational Users)
+    family: Identification and Authentication
+    description: >
+      Uniquely identify and authenticate organizational users and associate that unique
+      identification with processes acting on behalf of those users. Implement
+      multi-factor authentication for access to privileged and non-privileged accounts.
+    url: https://csrc.nist.gov/Projects/risk-management/sp800-53-controls/release-search#!/controls?version=5.1&search=IA-2
+
+  IA-5:
+    title: Authenticator Management
+    family: Identification and Authentication
+    description: >
+      Manage system authenticators by verifying identity before distributing,
+      protecting authenticator content from unauthorized disclosure and modification,
+      and requiring minimum security requirements for each type of authenticator.
+    url: https://csrc.nist.gov/Projects/risk-management/sp800-53-controls/release-search#!/controls?version=5.1&search=IA-5
+
+  IA-8:
+    title: Identification and Authentication (Non-Organizational Users)
+    family: Identification and Authentication
+    description: >
+      Uniquely identify and authenticate non-organizational users or processes acting
+      on behalf of non-organizational users.
+    url: https://csrc.nist.gov/Projects/risk-management/sp800-53-controls/release-search#!/controls?version=5.1&search=IA-8
+
+  MA-9:
+    title: Media Sanitization for Diagnostics and Maintenance
+    family: Maintenance
+    description: >
+      Check media containing diagnostic and test programs for malicious code before
+      the media are used in the system. Prevent the unauthorized removal of
+      maintenance equipment by verifying that there is no organizational information
+      on the equipment.
+    url: https://csrc.nist.gov/Projects/risk-management/sp800-53-controls/release-search#!/controls?version=5.1&search=MA-9
+
+  SA-9:
+    title: External System Services
+    family: System and Services Acquisition
+    description: >
+      Require that providers of external system services comply with organizational
+      security and privacy requirements and employ controls in accordance with
+      applicable laws, executive orders, directives, regulations, and standards.
+    url: https://csrc.nist.gov/Projects/risk-management/sp800-53-controls/release-search#!/controls?version=5.1&search=SA-9
+
+  SC-5:
+    title: Denial-of-Service Protection
+    family: System and Communications Protection
+    description: >
+      Implement controls to protect against or limit the effects of denial-of-service
+      events, including those caused by flooding, protocol abuse, or resource exhaustion.
+    url: https://csrc.nist.gov/Projects/risk-management/sp800-53-controls/release-search#!/controls?version=5.1&search=SC-5
+
+  SC-7:
+    title: Boundary Protection
+    family: System and Communications Protection
+    description: >
+      Monitor and control communications at the external boundary of the system and at
+      key internal boundaries within the system. Implement subnetworks for publicly
+      accessible system components.
+    url: https://csrc.nist.gov/Projects/risk-management/sp800-53-controls/release-search#!/controls?version=5.1&search=SC-7
+
+  SC-8:
+    title: Transmission Confidentiality and Integrity
+    family: System and Communications Protection
+    description: >
+      Implement cryptographic mechanisms to prevent unauthorized disclosure of
+      information and detect changes to information during transmission.
+    url: https://csrc.nist.gov/Projects/risk-management/sp800-53-controls/release-search#!/controls?version=5.1&search=SC-8
+
+  "SC-8(1)":
+    title: Transmission Confidentiality and Integrity | Cryptographic Protection
+    family: System and Communications Protection
+    description: >
+      Implement cryptographic mechanisms to prevent unauthorized disclosure of
+      information and detect changes to information during transmission. Enhancement:
+      implement HTTPS/TLS with strong cipher suites and enforce via HSTS headers.
+    url: https://csrc.nist.gov/Projects/risk-management/sp800-53-controls/release-search#!/controls?version=5.1&search=SC-8(1)
+
+  SC-12:
+    title: Cryptographic Key Establishment and Management
+    family: System and Communications Protection
+    description: >
+      Establish and manage cryptographic keys when cryptography is employed within
+      the system in accordance with the following key management requirements.
+    url: https://csrc.nist.gov/Projects/risk-management/sp800-53-controls/release-search#!/controls?version=5.1&search=SC-12
+
+  SC-13:
+    title: Cryptographic Protection
+    family: System and Communications Protection
+    description: >
+      Implement the following types of cryptography required for each specified
+      cryptographic use: FIPS-validated or NSA-approved cryptography.
+    url: https://csrc.nist.gov/Projects/risk-management/sp800-53-controls/release-search#!/controls?version=5.1&search=SC-13
+
+  SC-17:
+    title: Public Key Infrastructure Certificates
+    family: System and Communications Protection
+    description: >
+      Issue public key certificates under an appropriate certificate policy or obtain
+      public key certificates from an approved service provider. Include certificate
+      transparency monitoring to detect mis-issued certificates.
+    url: https://csrc.nist.gov/Projects/risk-management/sp800-53-controls/release-search#!/controls?version=5.1&search=SC-17
+
+  SC-20:
+    title: Secure Name/Address Resolution Service (Authoritative Source)
+    family: System and Communications Protection
+    description: >
+      Provide additional data origin authentication and integrity verification
+      artifacts along with the authoritative name resolution data that the system
+      returns in response to external name/address resolution queries (DNSSEC).
+    url: https://csrc.nist.gov/Projects/risk-management/sp800-53-controls/release-search#!/controls?version=5.1&search=SC-20
+
+  SI-3:
+    title: Malicious Code Protection
+    family: System and Information Integrity
+    description: >
+      Implement malicious code protection mechanisms at system entry and exit points
+      to detect and eradicate malicious code. Update malicious code protection
+      mechanisms whenever new releases are available.
+    url: https://csrc.nist.gov/Projects/risk-management/sp800-53-controls/release-search#!/controls?version=5.1&search=SI-3
+
+  SI-4:
+    title: System Monitoring
+    family: System and Information Integrity
+    description: >
+      Monitor the system to detect attacks and indicators of potential attacks,
+      unauthorized connections, and unauthorized system use. Deploy monitoring devices
+      strategically to collect information and identify anomalies.
+    url: https://csrc.nist.gov/Projects/risk-management/sp800-53-controls/release-search#!/controls?version=5.1&search=SI-4
+
+  SI-8:
+    title: Spam Protection
+    family: System and Information Integrity
+    description: >
+      Implement spam protection mechanisms at system entry and exit points to detect
+      and take action on unsolicited messages and prevent unauthorized data exfiltration
+      via content channels.
+    url: https://csrc.nist.gov/Projects/risk-management/sp800-53-controls/release-search#!/controls?version=5.1&search=SI-8
+
+  SI-19:
+    title: De-identification
+    family: System and Information Integrity
+    description: >
+      Remove the following elements of personally identifiable information from
+      datasets and system outputs. Apply de-identification techniques to prevent
+      exposure of email addresses and other PII through web content.
+    url: https://csrc.nist.gov/Projects/risk-management/sp800-53-controls/release-search#!/controls?version=5.1&search=SI-19

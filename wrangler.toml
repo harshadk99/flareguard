@@ -1,14 +1,59 @@
 name = "flareguard"
 main = "src/index.js"
 compatibility_date = "2024-07-23"
+compatibility_flags = ["nodejs_compat"]
 
-# Cloudflare account ID
 account_id = "dfaa0c35a2dcbc8f5beac03052a5ddd1"
 
+# ── Environment Variables (always present) ─────────────────────────────────────
 [vars]
-# Environment variables to configure your worker
-# Add your variables here when needed
+ENVIRONMENT = "development"
+CACHE_TTL_SECONDS = "300"
 
-[triggers]
-# Configure cron triggers if needed
-# crons = ["*/5 * * * *"]  # Example: run every 5 minutes 
+# ── OPTIONAL: Persistent Storage ───────────────────────────────────────────────
+# Uncomment the sections below to enable opt-in features.
+# Without these, the worker runs fully stateless — no credentials or IDs are
+# ever persisted. Raw zone/account IDs are NEVER stored even when enabled;
+# only a short SHA-256 hash is used as the storage key.
+#
+# To provision these resources on your Cloudflare account:
+#   npm run db:create
+#   npm run kv:create
+#   npm run r2:create
+#   npm run queue:create
+#   npm run db:migrate:remote
+# Then paste the returned IDs below.
+
+# -- KV Cache (reduces Cloudflare API calls on repeated scans) --
+# [[kv_namespaces]]
+# binding = "CACHE"
+# id = "YOUR_KV_ID"
+# preview_id = "YOUR_KV_PREVIEW_ID"
+
+# -- D1 Database (audit history, drift detection) --
+# [[d1_databases]]
+# binding = "DB"
+# database_name = "flareguard"
+# database_id = "YOUR_D1_ID"
+
+# -- R2 Bucket (downloadable JSON report storage) --
+# [[r2_buckets]]
+# binding = "REPORTS"
+# bucket_name = "flareguard-reports"
+# preview_bucket_name = "flareguard-reports-preview"
+
+# -- Queue (async multi-zone scanning) --
+# [[queues.producers]]
+# binding = "SCAN_QUEUE"
+# queue = "flareguard-scan-queue"
+#
+# [[queues.consumers]]
+# queue = "flareguard-scan-queue"
+# max_batch_size = 10
+# max_batch_timeout = 30
+# max_retries = 3
+
+# ── Local dev ──────────────────────────────────────────────────────────────────
+[dev]
+port = 8787
+local_protocol = "http"

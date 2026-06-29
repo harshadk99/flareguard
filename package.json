@@ -1,19 +1,20 @@
 {
   "name": "flareguard",
-  "version": "1.1.0",
-  "description": "Cloudflare security auditing tool",
+  "version": "2.0.0",
+  "description": "Cloudflare Security Posture Management — full-stack Workers + D1 + KV + R2 + Queues",
   "main": "src/index.js",
   "type": "module",
   "scripts": {
-    "dev": "wrangler dev",
+    "dev": "wrangler dev --local",
     "deploy": "wrangler deploy",
-    "test:zero-trust": "node test_zero_trust.js",
-    "test:multi-zone": "node test_multi_zone.js",
-    "test:env": "node test_env.js",
-    "setup:env": "node update_env.js",
-    "verify:working": "chmod +x ./verify_working.sh && ./verify_working.sh",
-    "verify:settings": "chmod +x ./verify_settings.sh && ./verify_settings.sh",
-    "preview-dashboard": "open multi_zone_dashboard.html"
+    "db:migrate:local": "wrangler d1 migrations apply flareguard --local",
+    "db:migrate:remote": "wrangler d1 migrations apply flareguard",
+    "db:create": "wrangler d1 create flareguard",
+    "kv:create": "wrangler kv namespace create CACHE",
+    "r2:create": "wrangler r2 bucket create flareguard-reports",
+    "queue:create": "wrangler queues create flareguard-scan-queue",
+    "setup": "npm run db:create && npm run kv:create && npm run r2:create && npm run queue:create && npm run db:migrate:remote",
+    "setup:local": "npm run db:migrate:local"
   },
   "keywords": [
     "cloudflare",
@@ -27,5 +28,9 @@
     "dotenv": "^16.3.1",
     "js-yaml": "^4.1.0",
     "node-fetch": "^3.3.2"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20260628.1",
+    "wrangler": "^4.105.0"
   }
 }

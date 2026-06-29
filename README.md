@@ -1,377 +1,192 @@
-# FlareGuard Edge
+# FlareGuard
 
-> 🛡️ **Cloud Security Posture Management for Cloudflare**
+> Open-source CSPM for the Cloudflare stack
 
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-[![Build Status](https://img.shields.io/badge/build-passing-brightgreen.svg)]()
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Live Demo](https://img.shields.io/badge/demo-live-brightgreen.svg)](https://flareguard.harshad-surfer.workers.dev/)
+[![Cloudflare Workers](https://img.shields.io/badge/Cloudflare-Workers-F38020?logo=cloudflare&logoColor=white)](https://workers.cloudflare.com)
 
 <div align="center">
   <br />
   <a href="https://flareguard.harshad-surfer.workers.dev/">
-    <img src="https://img.shields.io/badge/Try_Live_Demo-FF7A59?style=for-the-badge&logo=cloudflare&logoColor=white" alt="Try Live Demo" />
+    <img src="https://img.shields.io/badge/Try_Live_Demo-F38020?style=for-the-badge&logo=cloudflare&logoColor=white" alt="Try Live Demo" />
   </a>
   <br /><br />
 </div>
 
-## Disclaimer
+FlareGuard audits your entire Cloudflare environment — zone security, Zero Trust policies, and Workers — in a single run. No infrastructure to manage. Nothing stored by default.
 
-FlareGuard Edge is a personal, independent open-source project developed entirely in my free time as a technical experimentation and learning exercise. This project:
+**Existing CSPM tools cover AWS, GCP, and Azure. Cloudflare is a blind spot. FlareGuard fills that gap.**
 
-1. Is not affiliated with, endorsed by, sponsored by, or associated with any company
-2. Has been developed exclusively using personal resources and during personal time
-3. Does not incorporate any proprietary information or trade secrets
-4. Represents solely my own intellectual property and creative work
-5. Does not utilize any company-owned equipment, software licenses, or resources
+---
 
-This project is shared with the community in the spirit of open-source collaboration and knowledge sharing.
+## What It Checks
 
-> **Note on Name Change:** This project was previously known as "FlareGuard" and has been renamed to "FlareGuard Edge" to better reflect its focus on edge security and to avoid any potential confusion with other projects or products.
+| Category | Checks | Examples |
+|---|---|---|
+| SSL/TLS | 5 | Full (Strict) mode, TLS 1.2+ minimum, TLS 1.3, Always HTTPS |
+| Security | 3 | Browser Integrity Check, Security Level, Email Obfuscation |
+| WAF | 2 | OWASP Core Rule Set, block vs. detect-only mode |
+| DNS | 1 | DNSSEC active |
+| Bot Protection | 1 | Bot Fight Mode / Bot Management |
+| Rate Limiting | 1 | At least one active rule |
+| Zero Trust | 2 | MFA on all Access apps, identity provider configured |
+| Workers | 2 | Zombie worker detection, plain-text secret scanning |
 
-## Comprehensive CSPM for Your Cloudflare Environment
+All findings map to NIST SP 800-53 controls.
 
-FlareGuard Edge is a powerful, serverless CSPM (Cloud Security Posture Management) platform designed specifically for Cloudflare. It continuously scans your Cloudflare configurations for vulnerabilities, misconfigurations, and compliance gaps, delivering actionable insights to strengthen your security posture.
-
-**Why FlareGuard Edge CSPM?**
-
-- 🔍 **Complete Security Visibility** - Assess your entire Cloudflare environment from zones to Zero Trust
-- 🚀 **Zero Infrastructure** - Runs entirely as a Cloudflare Worker with no backend servers
-- 📊 **Actionable Insights** - Get a security score and prioritized recommendations
-- 🔐 **Compliance Ready** - Compare your settings against industry security standards
-- 🏆 **NIST Mapped** - All findings mapped to NIST security controls
-- 🔄 **Expandable Coverage** - Currently focused on zone security with roadmap for Zero Trust, Access, and more
-
-## Current Status
-
-FlareGuard Edge CSPM is in active development. Our modular architecture allows us to expand security coverage across the Cloudflare ecosystem.
-
-### What's Working
-
-- ✅ Zone security posture assessment
-- ✅ Real-time API integration for configuration analysis
-- ✅ Security scoring with compliance mapping
-- ✅ Detailed remediation guidance
-- ✅ NIST controls mapping
-
-### On Our Roadmap (Community Contributions Welcome!)
-
-- 🚀 Advanced zone security checks (WAF, Rate Limiting, DNSSEC, etc.)
-- 🚀 Zero Trust security posture assessment
-- 🚀 Multi-zone management for enterprise environments
-- 🚀 Historical security posture tracking
-
-See our detailed [roadmap.md](roadmap.md) file for our development plans and how you can contribute.
-
-## Future Vision
-
-Our vision for FlareGuard Edge is to become the definitive CSPM platform for the entire Cloudflare ecosystem. Beyond zone security, we're building a comprehensive solution that provides security visibility across all Cloudflare services. Check out our [landing page mockup](./landing_page_update.html) to see the planned user interface with enhanced features.
-
-### Planned Enhancements
-
-- **Enterprise CSPM Dashboard** - Unified security view across all Cloudflare services
-- **Multi-Service Coverage** - Expanding beyond zones to Zero Trust, Access, Pages, and more
-- **Advanced Risk Scoring** - Sophisticated algorithms for precise security posture evaluation
-- **Compliance Reporting** - Pre-built reports for common frameworks (NIST, ISO, CIS)
-- **Automated Remediation** - One-click fixes for common security issues
-
-We welcome community contributions to help make this vision a reality!
-
-## How It Works
-
-FlareGuard Edge provides a simple workflow to audit your Cloudflare zone security settings. The screenshots below show the web interface in action.
-
-> **Security Note:** When using FlareGuard Edge or sharing screenshots, always redact sensitive information like Zone IDs, API tokens, and domain names. The screenshots below are examples only and should not contain real credentials.
-> 
-> **Important:** Before sharing any screenshots of your FlareGuard Edge usage:
-> 1. Redact or blur all Zone IDs (32-character hexadecimal strings)
-> 2. Never include API tokens in screenshots
-> 3. Consider redacting domain names if they're for internal or sensitive systems
-> 4. Verify no sensitive information appears in the URL bar or browser tabs
-
-### 1. Enter Credentials
-
-Enter your Cloudflare Zone ID and API Token to begin the security audit.
-
-![Step 1: Enter Credentials](docs/assets/1.png)
-
-### 2. Run Audit
-
-Run the security audit to evaluate your zone against security best practices.
-
-![Step 2: Run Audit](docs/assets/3.png)
-
-### 3. View Results
-
-Review the detailed results showing passed and failed checks, with remediation guidance.
-
-![Step 3: View Results](docs/assets/4.png)
-
-## Latest Updates
-
-- **Real-time API Integration**: Now fetches live data from the Cloudflare API for basic zone settings
-- **Improved Accuracy**: Security audit results now accurately reflect your actual Cloudflare configuration
-- **Fixed Function Name Collision**: Resolved issues with global fetch function for better reliability
-- **Optimized Deployment**: Removed unnecessary KV namespace dependencies for smoother deployment
-
-## Features
-
-- 🔍 **Comprehensive Security Assessment** - Analyzes Cloudflare configurations against security best practices
-- 🔐 **Customizable Security Baselines** - Compare settings against YAML-defined security baselines tailored to your needs
-- 📊 **Security Posture Scoring** - Calculates overall security score with detailed breakdowns by category
-- 🏢 **Compliance Frameworks** - Maps findings to NIST security controls for compliance reporting
-- 📝 **Actionable Remediation** - Provides step-by-step guidance to resolve each security gap
-- 🔄 **Continuous Monitoring** - Connects directly to Cloudflare API for up-to-date assessment
-- 🌐 **Serverless Architecture** - Runs entirely as a Cloudflare Worker with no infrastructure to maintain
-- 🔌 **Extensible Platform** - Modular design allows for expanding coverage to additional Cloudflare services
+---
 
 ## Architecture
 
-```mermaid
-flowchart LR
-    %% Main components
-    User([User])
-    Dashboard["Dashboard UI"]
-    API["API Layer"]
-    Audit["Audit Engine"]
-    Baseline["Security Baseline"]
-    Report["Report Generator"]
-    CloudflareAPI["Cloudflare API"]
-    
-    %% Clean flow
-    User --> Dashboard --> API --> Audit
-    Baseline --> Audit
-    Audit --> CloudflareAPI
-    CloudflareAPI --> Audit
-    Audit --> Report --> API --> Dashboard --> User
-    
-    %% Legend with clearer status
-    subgraph Legend[" "]
-        Current["✅ Current: Basic Zone Security"]:::current
-        Future["🤝 Community: Advanced Features"]:::future
-    end
-    
-    %% Styling
-    classDef primary fill:#f38020,stroke:#333,stroke-width:1px,color:white;
-    classDef secondary fill:#faad3f,stroke:#333,stroke-width:1px,color:white;
-    classDef api fill:#404041,stroke:#333,stroke-width:1px,color:white;
-    classDef ui fill:#4CAF50,stroke:#333,stroke-width:1px,color:white;
-    classDef user fill:#9C27B0,stroke:#333,stroke-width:1px,color:white;
-    classDef legend fill:none,stroke:none;
-    classDef current fill:#4CAF50,stroke:#333,stroke-width:1px,color:white;
-    classDef future fill:#1976D2,stroke:#333,stroke-width:1px,color:white;
-    
-    class Dashboard ui;
-    class API,Audit primary;
-    class Baseline,Report secondary;
-    class CloudflareAPI api;
-    class User user;
-    class Legend legend;
+Built on the Cloudflare stack — no external infrastructure required.
+
+```
+Zone Audit Request
+       │
+       ▼
+  Audit Engine  ──── baseline.yaml (17 checks)
+       │
+       ├── zone-setting evaluator  (SSL, TLS, security settings)
+       ├── waf evaluator           (OWASP CRS, block mode)
+       ├── dnssec evaluator        (DNSSEC status)
+       ├── bot evaluator           (Bot Fight Mode / Management)
+       ├── rate-limit evaluator    (rate limiting rules)
+       ├── access evaluator        (Zero Trust MFA, IdP)
+       └── workers evaluator       (zombie detection, secret scanning)
 ```
 
-## Technical Implementation
+**Stateless by default.** Audit runs in-memory, result returned in the response. Optional persistent storage (D1 + KV + R2 + Queues) activates when bindings are present — enables audit history, drift detection, and async account-wide scanning.
 
-FlareGuard Edge is built as a serverless application using Cloudflare Workers, providing a lightweight yet powerful security auditing platform. Here's how it works under the hood:
+**Privacy-first.** API tokens never leave the request. Zone IDs are hashed (SHA-256) before any storage write. Raw credentials are never persisted.
 
-### Core Components
-
-1. **API Layer** - Handles HTTP requests and routes them to appropriate handlers
-   - Implements RESTful endpoints for audit, test connection, and UI serving
-   - Validates input parameters and provides meaningful error responses
-
-2. **Audit Engine** - The heart of FlareGuard Edge's security assessment
-   - Fetches configuration data from Cloudflare API endpoints
-   - Evaluates settings against security baselines defined in YAML
-   - Maps findings to NIST security controls for compliance reporting
-   - Calculates security scores based on passed/failed checks
-
-3. **Security Baseline** - Defines security best practices
-   - YAML-based configuration for easy maintenance and updates
-   - Categorized checks with severity levels and remediation guidance
-   - Compliance mappings to industry standards
-
-4. **Report Generator** - Creates detailed security reports
-   - Formats findings with clear pass/fail status
-   - Provides actionable remediation steps for failed checks
-   - Generates downloadable HTML reports
-
-5. **Dashboard UI** - Clean, responsive interface
-   - Built with vanilla HTML/CSS/JS for minimal dependencies
-   - Cloudflare-styled design for consistent branding
-   - Interactive elements for real-time feedback
-
-### Key Technical Features
-
-- **Serverless Architecture** - Zero infrastructure to maintain
-- **Real-time API Integration** - Direct calls to Cloudflare API for up-to-date assessment
-- **Modular Design** - Separation of concerns for easier maintenance and extension
-- **Environment Variable Support** - Secure credential management for testing and development
-- **Security-First Implementation** - Input validation, secure token handling, and proper error management
-
-### Implementation Highlights
-
-- **Custom API Client** - Built a lightweight API client for Cloudflare with error handling and response parsing
-- **Dynamic Evaluation Logic** - Flexible check evaluation that adapts to different security requirements
-- **Responsive UI** - Mobile-friendly dashboard that works across devices
-- **Efficient Error Handling** - Comprehensive error management for API calls and user inputs
-- **Performance Optimization** - Minimized dependencies and efficient code for fast worker execution
-
-The codebase is structured for extensibility, making it easy for contributors to add new security checks or extend coverage to additional Cloudflare services.
+---
 
 ## Getting Started
 
 ### Prerequisites
-
 - [Cloudflare](https://cloudflare.com) account
-- [Wrangler CLI](https://developers.cloudflare.com/workers/wrangler/install-and-update/) (for deployment)
-- Node.js (v16+)
+- [Node.js](https://nodejs.org) v16+
+- [Wrangler CLI](https://developers.cloudflare.com/workers/wrangler/)
 
-### Installation
+### Run Locally (zero setup)
 
-1. Clone the repository
-   ```bash
-   git clone https://github.com/harshadk99/flareguard-edge.git
-   cd flareguard-edge
-   ```
+```bash
+git clone https://github.com/harshadk99/flareguard.git
+cd flareguard
+npm install
+npm run dev
+```
 
-2. Install dependencies
-   ```bash
-   npm install
-   ```
+Open `http://localhost:8787` — enter your Zone ID and API token to run an audit.
 
-3. Deploy to Cloudflare Workers
-   ```bash
-   wrangler deploy
-   ```
+### Deploy to Cloudflare
 
-## Usage
+```bash
+npx wrangler login
+npm run deploy
+```
 
-### Quick Start
+That's it. The worker deploys stateless — no KV, D1, R2, or Queue provisioning needed.
 
-1. Enter your Cloudflare Zone ID
-2. Enter your Cloudflare API Token with appropriate permissions
-3. Click "Test Connection" to verify credentials
-4. Click "Run Audit" to analyze your zone
+### Enable Persistent Storage (optional)
 
-### Required API Token Permissions
+To unlock audit history, drift detection, and async account-wide scanning:
 
-Your Cloudflare API token needs these permissions:
-- Zone Read
-- SSL and Certificates Read
+```bash
+npm run db:create    # creates D1 database
+npm run kv:create    # creates KV namespace
+npm run r2:create    # creates R2 bucket
+npm run queue:create # creates Queue
+npm run db:migrate:remote
+```
 
-### Understanding Results
-
-The audit provides results in several sections:
-- **Summary** - Overall security score and statistics
-- **Issue List** - Detailed findings sorted by severity
-- **Remediation** - Specific recommendations to improve security
-
-## Security & Privacy
-
-**FlareGuard Edge prioritizes your security and privacy:**
-
-- No credentials or sensitive data are stored
-- All processing happens at request time in the Cloudflare Worker
-- API tokens are only used for the duration of the audit
-- No data is logged or persisted after the audit completes
-- Uses `type="password"` fields to protect token visibility
-
-## Security Checks Currently Implemented
-
-FlareGuard Edge currently evaluates your zone against these security best practices:
-
-| Check | Recommendation | NIST Controls |
-|-------|----------------|---------------|
-| SSL/TLS Mode | Full (Strict) | SC-8, SC-12 |
-| Minimum TLS Version | TLS 1.2+ | SC-8, SC-13 |
-| Always Use HTTPS | Enabled | SC-8, SC-7 |
-| Opportunistic Encryption | Enabled | SC-8 |
-| TLS 1.3 | Enabled | SC-8, SC-13 |
-| Browser Integrity Check | Enabled | SI-3 |
-| Email Obfuscation | Enabled | SC-18 |
-| Security Level | Medium+ | SC-5 |
-
-## Security Checks for Community Development
-
-We welcome community contributions to implement these additional security checks:
-
-| Check | Recommendation | NIST Controls | Difficulty |
-|-------|----------------|---------------|------------|
-| WAF Core Rule Set | Enabled | SC-7, SI-4 | Medium |
-| Bot Management | Enabled | SC-5, SI-4 | Medium |
-| DNSSEC | Enabled | SC-8, SC-20 | Easy |
-| Rate Limiting | Configured | SC-5, SI-4 | Medium |
-| WAF Logging | Enabled | AU-2, AU-11 | Easy |
-| Country Blocking | Configured | AC-3, SC-7 | Medium |
-| Certificate Expiration | >30 days | SC-12, CM-6 | Easy |
-| Strong Cipher Suites | No weak ciphers | SC-8, SC-13 | Medium |
-
-See our [roadmap.md](roadmap.md) for more details on how you can contribute to these features.
-
-## Contributing
-
-FlareGuard Edge welcomes contributions from the community. This project thrives on open collaboration while maintaining professional standards.
-
-### Ways to Contribute
-
-- **Implement New Security Checks**: Add security checks from our community development list
-- **Improve Documentation**: Enhance the docs, add examples, or clarify instructions
-- **Fix Bugs**: Help identify and fix issues
-- **Add Features**: Implement new features from our roadmap
-- **Suggest Ideas**: Open an issue with your feature suggestions
-
-### Contribution Process
-
-1. **Fork the repository**
-2. **Create a feature branch**
-   ```bash
-   git checkout -b feature/amazing-feature
-   ```
-3. **Commit your changes**
-   ```bash
-   git commit -m 'Add some amazing feature'
-   ```
-4. **Push to the branch**
-   ```bash
-   git push origin feature/amazing-feature
-   ```
-5. **Open a Pull Request**
-
-### Code of Conduct
-
-- Be respectful and inclusive in all interactions
-- Provide constructive feedback on contributions
-- Focus on the technical merits of the code
-- Follow the established code style and patterns
-
-For major changes, please open an issue first to discuss what you'd like to change.
-
-## Testing with Environment Variables
-
-For local testing and development, you can use environment variables to securely store your Cloudflare credentials:
-
-1. **Set up your environment variables**:
-   ```bash
-   npm run setup:env
-   ```
-   This interactive script will prompt you for your Cloudflare Zone ID and API Token and store them in a `.env` file.
-
-2. **Run the test with environment variables**:
-   ```bash
-   npm run test:env
-   ```
-
-The `.env` file is automatically added to `.gitignore` to prevent accidentally committing your credentials to the repository.
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## Acknowledgments
-
-- Cloudflare for their excellent API documentation
-- The security community for defining best practices
-- All contributors who help improve this tool
+Then uncomment the binding sections in `wrangler.toml` and redeploy.
 
 ---
 
-*FlareGuard Edge is an independent open-source project created as a personal technical experiment and learning exercise. It is not affiliated with any company and has been developed using personal resources during personal time.* 
+## API
+
+| Method | Endpoint | Description |
+|---|---|---|
+| `GET` | `/` | Dashboard UI |
+| `GET` | `/api/status` | Active features + privacy attestation |
+| `POST` | `/api/test-connection` | Validate credentials against live Cloudflare API |
+| `POST` | `/api/audit/zone` | Run a zone security audit |
+| `POST` | `/api/audit/account` | Enqueue account-wide scan across all zones |
+| `GET` | `/api/history/:zoneId` | Audit history (requires D1) |
+| `GET` | `/api/drift/:zoneId` | Drift between two most recent audits (requires D1) |
+| `GET` | `/api/audit/:auditId/findings` | Detailed findings for one audit (requires D1) |
+
+### Zone Audit Request
+
+```bash
+curl -X POST https://your-worker.workers.dev/api/audit/zone \
+  -H "Content-Type: application/json" \
+  -d '{
+    "zone_id": "your-32-char-zone-id",
+    "api_token": "your-cloudflare-api-token",
+    "account_id": "your-account-id"
+  }'
+```
+
+`account_id` is optional but enables Zero Trust and Worker checks.
+
+### Required API Token Permissions
+
+| Permission | Purpose |
+|---|---|
+| Zone Read | Basic zone settings |
+| SSL and Certificates Read | TLS configuration |
+| Firewall Services Read | WAF packages, rate limits |
+| DNS Read | DNSSEC status |
+| Account Settings Read | Worker scripts, Access apps |
+| Access: Apps and Policies Read | Zero Trust MFA checks |
+
+---
+
+## Adding Security Checks
+
+Add a check to `baseline.yaml` — no code required for zone settings:
+
+```yaml
+- id: CF-PERF-001
+  name: HTTP/2 is enabled
+  category: Performance
+  service: zone-setting
+  setting: http2
+  expect: "on"
+  severity: LOW
+  nist_controls: [SC-8]
+  remediation: Enable HTTP/2 in Speed > Optimization.
+```
+
+For new service types, add an evaluator in `src/audit/evaluators/` and register it in `src/audit/engine.js`.
+
+---
+
+## Roadmap
+
+- [ ] Scheduled scans (Cron Triggers)
+- [ ] Slack / email alerts on drift
+- [ ] AI Gateway security checks (NIST AI RMF mapping)
+- [ ] Workers AI posture checks (OWASP LLM Top 10)
+- [ ] Multi-account dashboard
+- [ ] CIS Benchmark profile for Cloudflare
+- [ ] Compliance report export (PDF / hosted URL)
+
+---
+
+## Disclaimer
+
+FlareGuard is an independent open-source project developed in personal time. It is not affiliated with, endorsed by, or associated with Cloudflare, Inc. in any way. All Cloudflare product names are trademarks of Cloudflare, Inc.
+
+---
+
+## License
+
+MIT — see [LICENSE](LICENSE).
+
+## Author
+
+[Harshad Sadashiv Kadam](https://harshadsadashivkadam.com)

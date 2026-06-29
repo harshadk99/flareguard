@@ -213,7 +213,6 @@ worker/
 # Temporary files
 *-minimal.*
 *-test.*
-*-api.*
 deploy.js
 
 # PDF and other non-code files

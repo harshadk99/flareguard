@@ -7,6 +7,8 @@ import { evaluateBot } from './evaluators/bot.js';
 import { evaluateRateLimit } from './evaluators/rate-limit.js';
 import { evaluateAccess } from './evaluators/access.js';
 import { evaluateWorkers } from './evaluators/workers.js';
+import { evaluatePageShield } from './evaluators/page-shield.js';
+import { evaluateLogpush } from './evaluators/logpush.js';
 
 // Baseline is bundled at deploy time — loaded once per isolate lifetime
 let _baseline = null;
@@ -83,6 +85,8 @@ async function dispatch(check, api, zoneId, accountId, _cache) {
       case 'rate-limit':   return evaluateRateLimit(check, api, zoneId);
       case 'access':       return evaluateAccess(check, api, zoneId, accountId);
       case 'workers':      return evaluateWorkers(check, api, zoneId, accountId);
+      case 'page-shield':  return evaluatePageShield(check, api, zoneId);
+      case 'logpush':      return evaluateLogpush(check, api, zoneId, accountId);
       default:
         return naResult(check, `Service "${check.service}" not implemented.`);
     }
@@ -96,6 +100,7 @@ function naResult(check, message) {
     id: check.id, name: check.name, category: check.category,
     service: check.service, severity: check.severity,
     nist_controls: check.nist_controls ?? [],
+    cis_controls: check.cis_controls ?? [],
     status: 'NA', message, remediation: null,
   };
 }
@@ -275,4 +280,134 @@ const BUNDLED_BASELINE = `
   severity: CRITICAL
   nist_controls: [IA-5, SC-12]
   remediation: Use Secret bindings instead of plain-text env vars for sensitive values.
+
+- id: CF-HSTS-001
+  name: HTTP Strict Transport Security (HSTS) is enabled
+  category: Transport Security
+  service: zone-setting
+  setting: security_header
+  expect_nested:
+    path: strict_transport_security.enabled
+    value: "true"
+  severity: HIGH
+  nist_controls: [SC-8, "SC-8(1)"]
+  cis_controls: ["3.10"]
+  remediation: Enable HSTS in SSL/TLS > Edge Certificates > HTTP Strict Transport Security (HSTS).
+
+- id: CF-HSTS-002
+  name: HSTS max-age is at least 6 months (15768000 seconds)
+  category: Transport Security
+  service: zone-setting
+  setting: security_header
+  expect_nested:
+    path: strict_transport_security.max_age
+    value: "15768000"
+  severity: MEDIUM
+  nist_controls: [SC-8, "SC-8(1)"]
+  cis_controls: ["3.10"]
+  remediation: Set HSTS max-age to at least 15768000 seconds (6 months) to qualify for browser preload lists.
+
+- id: CF-HTTPS-002
+  name: Automatic HTTPS Rewrites is enabled
+  category: Transport Security
+  service: zone-setting
+  setting: automatic_https_rewrites
+  expect: "on"
+  severity: MEDIUM
+  nist_controls: [SC-8]
+  cis_controls: ["3.10"]
+  remediation: Enable Automatic HTTPS Rewrites in SSL/TLS > Edge Certificates to fix mixed content.
+
+- id: CF-ORIGIN-001
+  name: Authenticated Origin Pulls (mTLS) is enabled
+  category: Transport Security
+  service: zone-setting
+  setting: tls_client_auth
+  expect: "on"
+  severity: HIGH
+  nist_controls: [SC-8, SC-17, MA-9]
+  cis_controls: ["3.10"]
+  remediation: Enable Authenticated Origin Pulls in SSL/TLS > Origin Server to verify requests from Cloudflare to your origin.
+
+- id: CF-HTTP-001
+  name: HTTP/2 is enabled
+  category: Protocol Hygiene
+  service: zone-setting
+  setting: http2
+  expect: "on"
+  severity: LOW
+  nist_controls: [SC-8, CM-6]
+  cis_controls: ["12.6"]
+  remediation: Enable HTTP/2 in Speed > Optimization > Protocol Optimization.
+
+- id: CF-HTTP-002
+  name: HTTP/3 (QUIC) is enabled
+  category: Protocol Hygiene
+  service: zone-setting
+  setting: http3
+  expect: "on"
+  severity: LOW
+  nist_controls: [SC-8, CM-6]
+  cis_controls: ["12.6"]
+  remediation: Enable HTTP/3 in Speed > Optimization > Protocol Optimization to reduce connection latency.
+
+- id: CF-IPV6-001
+  name: IPv6 compatibility is enabled
+  category: Protocol Hygiene
+  service: zone-setting
+  setting: ipv6
+  expect: "on"
+  severity: LOW
+  nist_controls: [CM-6, CM-7]
+  cis_controls: ["12.6"]
+  remediation: Enable IPv6 compatibility in Network settings.
+
+- id: CF-LOG-001
+  name: At least one active Logpush job is configured
+  category: Observability
+  service: logpush
+  severity: HIGH
+  nist_controls: [AU-2, AU-9, SI-4]
+  cis_controls: ["6.1", "8.2"]
+  remediation: Configure a Logpush job in Analytics > Logpush to export HTTP request logs to your SIEM or storage.
+
+- id: CF-PS-001
+  name: Page Shield is enabled
+  category: Observability
+  service: page-shield
+  severity: HIGH
+  nist_controls: [SI-3, SI-4, SA-9]
+  cis_controls: ["8.2"]
+  remediation: Enable Page Shield in Security > Page Shield to monitor client-side scripts for supply chain attacks.
+
+- id: CF-PS-002
+  name: Page Shield policy enforcement is active (not monitor-only)
+  category: Observability
+  service: page-shield
+  severity: MEDIUM
+  nist_controls: [SI-3, SA-9]
+  cis_controls: ["8.2"]
+  remediation: Enable Page Shield policy enforcement in Security > Page Shield > Policies to block unapproved scripts.
+
+- id: CF-SEC-004
+  name: Hotlink Protection is enabled
+  category: Content Security
+  service: zone-setting
+  setting: hotlink_protection
+  expect: "on"
+  severity: LOW
+  nist_controls: [SI-8, AC-3]
+  cis_controls: ["9.3"]
+  remediation: Enable Hotlink Protection in Scrape Shield to prevent unauthorized embedding of your content.
+
+- id: CF-CERT-001
+  name: Certificate Transparency Monitoring is enabled
+  category: Transport Security
+  service: zone-setting
+  setting: certificate_transparency_monitoring
+  expect: "on"
+  severity: MEDIUM
+  nist_controls: [SC-17, SI-4]
+  cis_controls: ["3.10"]
+  remediation: Enable Certificate Transparency Monitoring in SSL/TLS > Edge Certificates to receive alerts for unauthorized certificates.
 `;

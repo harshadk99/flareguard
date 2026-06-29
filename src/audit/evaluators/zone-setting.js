@@ -37,6 +37,16 @@ export async function evaluateZoneSetting(check, api, zoneId) {
       : fail(check, `Minimum TLS version is ${value}, expected >= ${check.expect_min_tls}`, check.remediation);
   }
 
+  // Nested object path check — e.g. HSTS: { strict_transport_security: { enabled: true } }
+  if (check.expect_nested) {
+    const { path, value: expected } = check.expect_nested;
+    const actual = path.split('.').reduce((obj, key) => obj?.[key], value);
+    const pass = String(actual) === String(expected);
+    return pass
+      ? pass_(check, `${check.setting}.${path} is ${actual}`)
+      : fail(check, `${check.setting}.${path} is ${actual ?? 'not set'}, expected ${expected}`, check.remediation);
+  }
+
   return na(check, `No evaluation rule matched for check ${check.id}`);
 }
 
@@ -57,6 +67,7 @@ function result(check, status, message, remediation) {
     service: check.service,
     severity: check.severity,
     nist_controls: check.nist_controls ?? [],
+    cis_controls: check.cis_controls ?? [],
     status,
     message,
     remediation: status === 'FAIL' ? (remediation ?? check.remediation) : null,

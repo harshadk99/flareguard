@@ -347,6 +347,12 @@ No compliance framework auditor, no CSPM vendor, and no existing open-source too
 
 ---
 
+## Contributing
+
+Contributions are welcome — especially new security checks and compliance mapping updates. Adding a zone-setting check requires editing only `baseline.yaml` (no code). See [CONTRIBUTING.md](CONTRIBUTING.md) for the full guide including evaluator patterns, compliance mapping update process, and PR requirements.
+
+---
+
 ## Disclaimer
 
 FlareGuard is an independent open-source project. It is not affiliated with, endorsed by, or associated with Cloudflare, Inc. All Cloudflare product names are trademarks of Cloudflare, Inc.

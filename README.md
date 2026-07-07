@@ -115,6 +115,48 @@ POST /api/audit/zone
 
 ---
 
+## Project Structure
+
+```
+flareguard/
+├── baseline.yaml                   # 29 security checks — the only file you edit to add checks
+├── mappings/
+│   ├── index.yaml                  # declares active framework version per framework
+│   ├── nist-800-53-r5.yaml         # NIST SP 800-53 Rev 5 — source of truth for 24 controls
+│   └── cis-v8.yaml                 # CIS Controls v8 — source of truth for 5 controls
+├── migrations/
+│   └── 0001_init.sql               # D1 schema (audits, findings, workers tables)
+└── src/
+    ├── index.js                    # Worker entry point — routing
+    ├── api/
+    │   └── routes.js               # Request handlers, privacy enforcement, storage guards
+    ├── audit/
+    │   ├── engine.js               # runZoneAudit, runAccountAudit, dispatcher, report builder
+    │   └── evaluators/
+    │       ├── zone-setting.js     # expect / expect_one_of / expect_min_tls / expect_nested
+    │       ├── waf.js              # OWASP CRS, block mode
+    │       ├── dnssec.js           # DNSSEC status
+    │       ├── bot.js              # Bot Fight Mode / Bot Management
+    │       ├── rate-limit.js       # rate limiting rules
+    │       ├── access.js           # Zero Trust MFA + IdP (real API calls)
+    │       ├── workers.js          # zombie detection + secret scanning
+    │       ├── page-shield.js      # Page Shield status + policy mode
+    │       └── logpush.js          # Logpush jobs (zone + account level)
+    ├── ui/
+    │   ├── landing.js              # Marketing landing page served at /
+    │   └── dashboard.js            # Audit tool SPA served at /audit
+    ├── utils/
+    │   ├── cf-api.js               # Cloudflare API client (all methods)
+    │   ├── mappings.js             # Runtime compliance mapping resolver
+    │   └── privacy.js              # SHA-256 hash utility
+    ├── db/                         # D1 read/write (guarded — no-ops when D1 not bound)
+    ├── cache/                      # KV cache (guarded — no-ops when KV not bound)
+    ├── storage/                    # R2 report storage (guarded — no-ops when R2 not bound)
+    └── queue/                      # Queue enqueue + consumer (guarded — no-ops when Queue not bound)
+```
+
+---
+
 ## Versioned Compliance Mappings
 
 FlareGuard separates *what to check* (baseline.yaml) from *what a control means* (mappings/).
@@ -199,11 +241,34 @@ Uncomment the binding sections in `wrangler.toml` and redeploy.
 
 ---
 
+## UI
+
+| URL | Description |
+|-----|-------------|
+| `/` | Landing page — gap narrative, demo findings preview, checks grid, YAML example |
+| `/audit` | Audit tool — zone scan, account scan, history, drift detection |
+
+**Zone audit features:**
+- Security score ring with zone name and active framework versions
+- Findings sorted FAIL → WARNING → PASS → NA
+- Filter by status (Fail / Warning / Pass / N/A), category (SSL/TLS, WAF, Zero Trust…), or CIS-mapped only
+- **Expandable findings** — click any finding to reveal full NIST and CIS control cards with title, family, description, reference URL, and Implementation Group badges
+- Download full JSON report (includes `resolved_controls` on every finding)
+
+**Account scan features:**
+- Ranked zone risk table: worst score first
+- Aggregate stats: total zones, average score, count of zones below 70%
+
+**History and drift** require D1 persistent storage (opt-in — see setup below).
+
+---
+
 ## API Reference
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| `GET` | `/` | Dashboard SPA |
+| `GET` | `/` | Landing page |
+| `GET` | `/audit` | Audit tool SPA |
 | `GET` | `/api/status` | Worker health, active bindings, privacy attestation |
 | `POST` | `/api/test-connection` | Validate credentials against live Cloudflare API |
 | `POST` | `/api/audit/zone` | Run a full zone security audit |

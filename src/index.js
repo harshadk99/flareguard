@@ -10,6 +10,7 @@ import {
 } from './api/routes.js';
 import { processQueue } from './queue/index.js';
 import { generateDashboard } from './ui/dashboard.js';
+import { generateLanding } from './ui/landing.js';
 
 export default {
   // ── HTTP handler ─────────────────────────────────────────────────────────────
@@ -51,8 +52,13 @@ export default {
     const reportMatch = pathname.match(/^\/api\/report\/(.+)$/);
     if (reportMatch && method === 'GET') return handleReportDownload(reportMatch[1], env);
 
-    // ── UI (served by Worker when Pages is not used) ────────────────────────
+    // ── UI ──────────────────────────────────────────────────────────────────
     if (pathname === '/' || pathname === '/index.html') {
+      return new Response(generateLanding(), {
+        headers: { 'Content-Type': 'text/html; charset=utf-8' },
+      });
+    }
+    if (pathname === '/audit') {
       return new Response(generateDashboard(), {
         headers: { 'Content-Type': 'text/html; charset=utf-8' },
       });

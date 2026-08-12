@@ -77,7 +77,7 @@ export async function getFindings(env, auditId) {
   const { results } = await env.DB.prepare(`
     SELECT * FROM findings WHERE audit_id = ? ORDER BY
       CASE severity WHEN 'CRITICAL' THEN 1 WHEN 'HIGH' THEN 2 WHEN 'MEDIUM' THEN 3 WHEN 'LOW' THEN 4 ELSE 5 END,
-      CASE status WHEN 'FAIL' THEN 1 WHEN 'WARNING' THEN 2 WHEN 'PASS' THEN 3 ELSE 4 END
+      CASE status WHEN 'FAIL' THEN 1 WHEN 'WARNING' THEN 2 WHEN 'ERROR' THEN 3 WHEN 'PASS' THEN 4 ELSE 5 END
   `).bind(auditId).all();
   return results.map(r => ({ ...r, nist_controls: JSON.parse(r.nist_controls ?? '[]') }));
 }

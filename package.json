@@ -5,8 +5,10 @@
   "main": "src/index.js",
   "type": "module",
   "scripts": {
-    "dev": "wrangler dev --local",
-    "deploy": "wrangler deploy",
+    "dev": "npm run sync-baseline && wrangler dev --local",
+    "deploy": "npm run sync-baseline && wrangler deploy",
+    "sync-baseline": "node scripts/embed-baseline.js",
+    "test": "npm run sync-baseline && node --test test/**/*.test.js",
     "db:migrate:local": "wrangler d1 migrations apply flareguard --local",
     "db:migrate:remote": "wrangler d1 migrations apply flareguard",
     "db:create": "wrangler d1 create flareguard",

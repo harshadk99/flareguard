@@ -15,11 +15,13 @@ export class ReportStorage {
    */
   async saveReport(auditId, report) {
     if (!this.r2) return null;
-    const key = `reports/${report.zone_id ?? report.account_id}/${auditId}.json`;
+    // Prefer hashed identifiers — never key R2 objects by raw zone/account IDs
+    const idKey = report.zone_id_hash ?? report.account_id_hash ?? 'unknown';
+    const key = `reports/${idKey}/${auditId}.json`;
     await this.r2.put(key, JSON.stringify(report, null, 2), {
       httpMetadata: { contentType: 'application/json' },
       customMetadata: {
-        zone_id: report.zone_id ?? '',
+        zone_id_hash: report.zone_id_hash ?? '',
         score: String(report.summary?.score ?? 0),
         timestamp: report.timestamp,
       },

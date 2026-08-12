@@ -27,7 +27,7 @@ CREATE TABLE IF NOT EXISTS findings (
   category TEXT NOT NULL,
   service TEXT NOT NULL,
   severity TEXT NOT NULL CHECK (severity IN ('CRITICAL', 'HIGH', 'MEDIUM', 'LOW', 'INFO')),
-  status TEXT NOT NULL CHECK (status IN ('PASS', 'FAIL', 'WARNING', 'NA')),
+  status TEXT NOT NULL CHECK (status IN ('PASS', 'FAIL', 'WARNING', 'NA', 'ERROR')),
   message TEXT,
   remediation TEXT,
   nist_controls TEXT,           -- JSON array as text

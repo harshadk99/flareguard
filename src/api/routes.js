@@ -46,7 +46,8 @@ function validateInputs(body) {
 
 /**
  * POST /api/audit/zone
- * Body: { zone_id, api_token, account_id? }
+ * Body: { zone_id, api_token, account_id?, include_raw_ids? }
+ * Plaintext zone_id / account_id are omitted from the report unless include_raw_ids is true.
  */
 export async function handleZoneAudit(request, env) {
   const body = await parseBodyWithSizeGuard(request);
@@ -57,29 +58,30 @@ export async function handleZoneAudit(request, env) {
   if (errors.length) return err(errors.join(' '));
 
   const cache = new Cache(env.CACHE, Number(env.CACHE_TTL_SECONDS ?? 300));
+  const includeRawIds = body.include_raw_ids === true;
 
   let report;
   try {
-    report = await runZoneAudit(body.zone_id, body.api_token, body.account_id ?? null, env, cache);
+    report = await runZoneAudit(body.zone_id, body.api_token, body.account_id ?? null, env, cache, { includeRawIds });
   } catch (e) {
     return err(e.message, 400);
   }
 
   // ── Opt-in persistence (only when bindings are present) ───────────────────
-  // Credentials are NOT passed to any storage function.
+  // Credentials are NOT passed to any storage function. Stored JSON never keeps plaintext IDs.
   let auditId = null;
   if (hasDB(env)) {
     try {
-      const zoneHash    = await hashId(body.zone_id);
-      const accountHash = body.account_id ? await hashId(body.account_id) : null;
-      const storableReport = { ...report, zone_id_hash: zoneHash, account_id_hash: accountHash };
+      const zoneHash    = report.zone_id_hash ?? await hashId(body.zone_id);
+      const accountHash = report.account_id_hash ?? (body.account_id ? await hashId(body.account_id) : null);
+      const { zone_id: _z, account_id: _a, ...privacySafe } = report;
+      const storableReport = { ...privacySafe, zone_id_hash: zoneHash, account_id_hash: accountHash };
 
       auditId = await saveAudit(env, storableReport, 'zone');
 
       if (env.REPORTS) {
         const storage = new ReportStorage(env.REPORTS);
-        // Store report keyed by hash, not raw zone_id
-        const r2Key = await storage.saveReport(auditId, { ...storableReport, zone_id: zoneHash });
+        const r2Key = await storage.saveReport(auditId, storableReport);
         if (r2Key) await setReportKey(env, auditId, r2Key);
       }
     } catch (e) {
@@ -92,7 +94,7 @@ export async function handleZoneAudit(request, env) {
 
 /**
  * POST /api/audit/account
- * Body: { account_id, api_token }
+ * Body: { account_id, api_token, include_raw_ids? }
  */
 export async function handleAccountAudit(request, env) {
   const body = await parseBodyWithSizeGuard(request);
@@ -102,13 +104,14 @@ export async function handleAccountAudit(request, env) {
   const errors = validateInputs(body);
   if (errors.length) return err(errors.join(' '));
 
+  const includeRawIds = body.include_raw_ids === true;
+
   // Enqueue if Queue is bound
   if (env.SCAN_QUEUE) {
     try {
       const { CloudflareAPI } = await import('../utils/cf-api.js');
       const api = new CloudflareAPI(body.api_token);
       const zones = await api.listZones(body.account_id);
-      // Enqueue: api_token goes into the queue message (in-flight, not stored in D1)
       // Token intentionally excluded from queue messages — queue consumer uses CF_API_TOKEN secret
       await Promise.all(zones.map(z =>
         enqueueZoneScan(env.SCAN_QUEUE, z.id, body.account_id)
@@ -121,7 +124,7 @@ export async function handleAccountAudit(request, env) {
 
   // Synchronous fallback
   try {
-    const result = await runAccountAudit(body.account_id, body.api_token, env);
+    const result = await runAccountAudit(body.account_id, body.api_token, env, undefined, { includeRawIds });
     return json(result);
   } catch (e) {
     return err(e.message, 400);

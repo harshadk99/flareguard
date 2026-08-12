@@ -66,9 +66,13 @@ Each setting has an `id` field (e.g. `always_use_https`, `min_tls_version`, `htt
   remediation: One sentence telling the user exactly how to fix this in the Cloudflare dashboard.
 ```
 
-### Step 3 — Update `BUNDLED_BASELINE` in `src/audit/engine.js`
+### Step 3 — Sync the bundled baseline
 
-The Worker bundles the baseline as a string for edge deployment. Copy your new check entry to the end of the `BUNDLED_BASELINE` template literal in `engine.js`. This keeps local dev and production in sync.
+```bash
+npm run sync-baseline
+```
+
+This regenerates `src/audit/bundled-baseline.js` from `baseline.yaml`. `npm run dev`, `npm test`, and `npm run deploy` all run this automatically — you do **not** hand-edit a duplicate string in `engine.js`.
 
 ### Step 4 — Test it
 

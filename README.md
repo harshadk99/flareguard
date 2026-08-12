@@ -30,11 +30,12 @@ FlareGuard is the missing audit layer for the Cloudflare stack.
 
 FlareGuard runs as a Cloudflare Worker — the same serverless runtime it audits. It connects to the Cloudflare API using credentials provided at request time, evaluates your configuration against a curated security baseline, and returns a structured report with:
 
-- A **security score** (0–100) derived from weighted pass/fail/warning findings
-- **Per-finding remediation guidance** with direct links to the relevant Cloudflare dashboard
+- A **severity-weighted security score** (0–100) — CRITICAL findings weigh more than LOW; WARNING earns half credit; ERROR/N/A are excluded
+- **Open CRITICAL / HIGH counts** so risk isn't hidden behind an average
+- **Per-finding remediation guidance** with Cloudflare dashboard path hints
 - **NIST SP 800-53 Rev 5** and **CIS Controls v8** control mappings — resolved to full titles, descriptions, and reference URLs
-- **Drift detection** — a structured diff between any two historical audits
-- **Zombie Worker detection** — identifies stale, unrouted scripts that represent unmanaged attack surface
+- **Optional drift / history** when D1 storage is enabled (off by default — privacy-first, stateless deploy)
+- **Zombie Worker detection** — stale scripts with no routes on the audited zone
 
 ---
 
@@ -60,7 +61,7 @@ Selected checks:
 |----|------|----------|-----|------|
 | CF-SSL-001 | SSL/TLS mode is Full (Strict) | HIGH | — | SC-8, SC-13 |
 | CF-HSTS-001 | HSTS is enabled | HIGH | 3.10 | SC-8(1) |
-| CF-HSTS-002 | HSTS max-age ≥ 6 months (preload-eligible) | MEDIUM | 3.10 | SC-8(1) |
+| CF-HSTS-002 | HSTS max-age ≥ 1 year (preload-eligible) | MEDIUM | 3.10 | SC-8(1) |
 | CF-ORIGIN-001 | Authenticated Origin Pulls (mTLS) enabled | HIGH | 3.10 | SC-8, MA-9 |
 | CF-WAF-001 | OWASP Core Rule Set enabled | CRITICAL | — | SI-3, SC-7 |
 | CF-WAF-002 | WAF in block mode, not detect-only | HIGH | — | SI-3, SC-7 |

@@ -10,6 +10,7 @@
   expect: strict
   severity: HIGH
   nist_controls: [SC-8, SC-12, SC-13]
+  dashboard_path: ssl-tls
   remediation: Set SSL/TLS encryption to "Full (Strict)" in SSL/TLS settings.
 
 - id: CF-TLS-001
@@ -90,7 +91,8 @@
   service: waf
   severity: CRITICAL
   nist_controls: [SI-3, SC-7]
-  remediation: Enable the OWASP Core Rule Set with Medium or High sensitivity in Security > WAF.
+  dashboard_path: security/waf/managed-rules
+  remediation: Enable the Cloudflare OWASP Core Ruleset in Security > WAF > Managed rules (requires Pro or higher).
 
 - id: CF-WAF-002
   name: WAF is in block mode (not detect-only)
@@ -98,7 +100,8 @@
   service: waf
   severity: HIGH
   nist_controls: [SI-3, SC-7]
-  remediation: Set WAF package action to Block rather than Simulate/Log.
+  dashboard_path: security/waf/managed-rules
+  remediation: Ensure managed WAF rulesets are not overridden to Log/Simulate. Use Managed Default or Block in Security > WAF > Managed rules.
 
 # ── DNS ───────────────────────────────────────────────────────────────────────
 - id: CF-DNS-001
@@ -107,6 +110,7 @@
   service: dnssec
   severity: HIGH
   nist_controls: [SC-8, SC-20]
+  dashboard_path: dns/settings
   remediation: Enable DNSSEC in DNS settings and add the DS record to your registrar.
 
 # ── Bot Protection ────────────────────────────────────────────────────────────
@@ -125,6 +129,7 @@
   service: rate-limit
   severity: MEDIUM
   nist_controls: [SC-5, SI-4]
+  dashboard_path: security/waf/rate-limiting-rules
   remediation: Configure rate limiting rules in Security > WAF > Rate Limiting Rules.
 
 # ── Zero Trust / Access ───────────────────────────────────────────────────────
@@ -151,6 +156,7 @@
   service: workers
   severity: HIGH
   nist_controls: [CM-2, CM-8]
+  dashboard_path: workers
   remediation: Remove or document workers that have not been updated in 90+ days and have no routes.
 
 - id: WRK-002
@@ -159,6 +165,7 @@
   service: workers
   severity: CRITICAL
   nist_controls: [IA-5, SC-12]
+  dashboard_path: workers
   remediation: Use Secret bindings instead of plain-text env vars for sensitive values.
 
 # ── CIS: Transport Security (CIS Control 3.10) ───────────────────────────────
@@ -173,20 +180,22 @@
   severity: HIGH
   nist_controls: [SC-8, "SC-8(1)"]
   cis_controls: ["3.10"]
+  dashboard_path: ssl-tls/edge-certificates
   remediation: Enable HSTS in SSL/TLS > Edge Certificates > HTTP Strict Transport Security (HSTS).
 
 - id: CF-HSTS-002
-  name: HSTS max-age is at least 6 months (15768000 seconds)
+  name: HSTS max-age meets preload eligibility (at least 1 year / 31536000 seconds)
   category: Transport Security
   service: zone-setting
   setting: security_header
   expect_nested:
     path: strict_transport_security.max_age
-    value: "15768000"
+    min: 31536000
   severity: MEDIUM
   nist_controls: [SC-8, "SC-8(1)"]
   cis_controls: ["3.10"]
-  remediation: Set HSTS max-age to at least 15768000 seconds (6 months) to qualify for browser preload lists.
+  dashboard_path: ssl-tls/edge-certificates
+  remediation: Set HSTS max-age to at least 31536000 seconds (1 year) to meet browser HSTS preload eligibility requirements.
 
 - id: CF-HTTPS-002
   name: Automatic HTTPS Rewrites is enabled
@@ -252,6 +261,7 @@
   severity: HIGH
   nist_controls: [AU-2, AU-9, SI-4]
   cis_controls: ["6.1", "8.2"]
+  dashboard_path: analytics/logs/logpush
   remediation: Configure a Logpush job in Analytics > Logpush to export HTTP request logs to your SIEM or storage.
 
 - id: CF-PS-001

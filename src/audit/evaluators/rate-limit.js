@@ -1,23 +1,33 @@
+import { pass, fail, unevaluable } from '../finding.js';
+
+/**
+ * CF-RL-001 — at least one enabled rate limiting rule in the
+ * http_ratelimit phase entrypoint ruleset (current Rulesets API).
+ *
+ * A 404 on the entrypoint means no ruleset exists yet → FAIL (no rules).
+ * Auth / permission / other API errors → ERROR (unevaluable).
+ */
 export async function evaluateRateLimit(check, api, zoneId) {
-  let rules;
+  let ruleset;
   try {
-    rules = await api.getRateLimitRules(zoneId);
+    ruleset = await api.getRateLimitEntrypoint(zoneId);
   } catch (err) {
-    return na(check, `Rate limit rules not available: ${err.message}`);
+    // No entrypoint ruleset yet → zone has zero rate limiting rules configured
+    if (err?.kind === 'not_found' || err?.status === 404) {
+      return fail(check, 'No rate limiting rules are configured for this zone (http_ratelimit entrypoint missing).');
+    }
+    return unevaluable(check, err);
   }
 
-  if (!Array.isArray(rules) || rules.length === 0) {
+  const rules = Array.isArray(ruleset?.rules) ? ruleset.rules : [];
+  if (rules.length === 0) {
     return fail(check, 'No rate limiting rules are configured for this zone.');
   }
 
-  const enabled = rules.filter(r => r.disabled !== true);
-  if (enabled.length === 0) return fail(check, `${rules.length} rate limit rule(s) exist but all are disabled.`);
-  return pass_(check, `${enabled.length} active rate limiting rule(s) configured.`);
-}
-
-function pass_(check, message) { return r(check, 'PASS', message); }
-function fail(check, message) { return r(check, 'FAIL', message, check.remediation); }
-function na(check, message) { return r(check, 'NA', message); }
-function r(check, status, message, remediation) {
-  return { id: check.id, name: check.name, category: check.category, service: check.service, severity: check.severity, nist_controls: check.nist_controls ?? [], status, message, remediation: status === 'FAIL' ? remediation : null };
+  // Rulesets API uses `enabled` (default true when omitted). Ignore purely disabled rules.
+  const enabled = rules.filter(r => r.enabled !== false);
+  if (enabled.length === 0) {
+    return fail(check, `${rules.length} rate limit rule(s) exist but all are disabled.`);
+  }
+  return pass(check, `${enabled.length} active rate limiting rule(s) configured in http_ratelimit phase.`);
 }

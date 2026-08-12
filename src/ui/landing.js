@@ -373,7 +373,7 @@ footer a{color:var(--orange);text-decoration:none}
     <div class="pillar">
       <div class="pillar-icon">📋</div>
       <h3>Compliance-grade mappings</h3>
-      <p>Every finding resolves to full NIST SP 800-53 Rev 5 and CIS Controls v8 metadata — title, description, reference URL, implementation groups. Ready for GRC evidence packages.</p>
+      <p>Every finding resolves to full NIST SP 800-53 Rev 5 and CIS Controls v8 metadata — title, description, reference URL, implementation groups. Useful input for GRC mapping; not a certified evidence package by itself.</p>
     </div>
     <div class="pillar">
       <div class="pillar-icon">⚡</div>
@@ -408,7 +408,7 @@ footer a{color:var(--orange);text-decoration:none}
       <div class="step-num">3</div>
       <div class="step-body">
         <h4>Get a structured, compliance-ready report</h4>
-        <p>Score, per-finding remediation, and resolved control references with full titles, descriptions, and URLs. Download as JSON or connect D1 to track drift over time.</p>
+        <p>Severity-weighted score, per-finding remediation with dashboard path hints, and resolved control references. Download as JSON. Enable D1 if you want history and status-diff drift tracking.</p>
       </div>
     </div>
   </div>

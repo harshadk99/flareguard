@@ -54,7 +54,7 @@ export function generateDashboard() {
     .score-ring{width:100px;height:100px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto .75rem;font-size:1.7rem;font-weight:800;color:#fff}
     .zone-name{text-align:center;font-size:1rem;font-weight:700;margin-bottom:.25rem}
     .framework-ver{text-align:center;font-size:.68rem;color:#aaa;margin-bottom:1rem}
-    .stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:.6rem;margin-bottom:1rem}
+    .stat-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:.6rem;margin-bottom:1rem}
     @media(max-width:500px){.stat-grid{grid-template-columns:repeat(2,1fr)}}
     .stat{background:var(--bg);border-radius:6px;padding:.65rem .5rem;text-align:center}
     .stat-val{font-size:1.4rem;font-weight:800}
@@ -79,13 +79,14 @@ export function generateDashboard() {
     .finding.FAIL{border-left-color:var(--fail)}
     .finding.WARNING{border-left-color:var(--warn)}
     .finding.NA{border-left-color:var(--na)}
+    .finding.ERROR{border-left-color:#64748b}
     .finding-main{padding:.8rem 1rem;cursor:pointer;display:flex;align-items:flex-start;gap:.75rem}
     .finding-badges{display:flex;flex-direction:column;gap:.3rem;align-items:center;min-width:52px;flex-shrink:0}
     .badge{font-size:.6rem;font-weight:700;padding:.15rem .45rem;border-radius:4px;text-transform:uppercase;color:#fff;text-align:center;width:100%}
     .badge-CRITICAL{background:var(--critical)}.badge-HIGH{background:var(--fail)}
     .badge-MEDIUM{background:var(--warn)}.badge-LOW{background:#3b82f6}
     .badge-PASS{background:var(--pass)}.badge-FAIL{background:var(--fail)}
-    .badge-WARNING{background:var(--warn)}.badge-NA{background:var(--na)}
+    .badge-WARNING{background:var(--warn)}.badge-NA{background:var(--na)}.badge-ERROR{background:#64748b}
     .finding-body{flex:1;min-width:0}
     .finding-title{font-size:.875rem;font-weight:700;margin-bottom:.2rem;line-height:1.3}
     .finding-msg{font-size:.78rem;color:#555;margin-bottom:.3rem}
@@ -150,12 +151,13 @@ export function generateDashboard() {
 </nav>
 
 <div class="container">
-  <div class="tabs">
+  <div class="tabs" id="main-tabs">
     <button class="tab active" data-tab="scan">Zone Audit</button>
     <button class="tab" data-tab="account">Account Scan</button>
-    <button class="tab" data-tab="history">Audit History</button>
-    <button class="tab" data-tab="drift">Drift Detection</button>
+    <button class="tab" data-tab="history" data-requires="audit_history" hidden>Audit History</button>
+    <button class="tab" data-tab="drift" data-requires="drift_detection" hidden>Drift Detection</button>
   </div>
+  <div id="features-banner" class="alert alert-info" style="display:none;margin-bottom:1rem"></div>
 
   <!-- ── Zone Scan ─────────────────────────────────────────────────────────── -->
   <div class="tab-panel active" id="tab-scan">
@@ -188,6 +190,7 @@ export function generateDashboard() {
         <div class="score-ring" id="score-ring">—</div>
         <div class="zone-name" id="zone-name"></div>
         <div class="framework-ver" id="framework-ver"></div>
+        <div id="score-meta" style="text-align:center;font-size:.72rem;color:#888;margin-bottom:.75rem"></div>
         <div class="stat-grid" id="stat-grid"></div>
         <button class="btn btn-outline" id="btn-download" style="width:100%;margin-top:.25rem">Download JSON report</button>
       </div>
@@ -204,6 +207,7 @@ export function generateDashboard() {
         <button class="filter-btn f-fail" data-filter="status" data-val="FAIL">Fail</button>
         <button class="filter-btn f-warn" data-filter="status" data-val="WARNING">Warning</button>
         <button class="filter-btn f-pass" data-filter="status" data-val="PASS">Pass</button>
+        <button class="filter-btn" data-filter="status" data-val="ERROR">Error</button>
         <button class="filter-btn" data-filter="status" data-val="NA">N/A</button>
         <div class="filter-divider"></div>
         <span class="filter-group-label">CIS</span>
@@ -221,6 +225,7 @@ export function generateDashboard() {
     <div class="card">
       <div class="card-title">Account-wide scan</div>
       <p style="font-size:.875rem;color:#666;margin-bottom:1.25rem">Scans all zones in your account and returns a ranked risk summary — worst zones first.</p>
+      <p id="account-mode-note" style="font-size:.78rem;color:#888;margin-bottom:1rem"></p>
       <div id="account-alert" class="alert" style="display:none"></div>
       <div class="form-group">
         <label>Account ID</label>
@@ -275,12 +280,36 @@ export function generateDashboard() {
 // ── Helpers ───────────────────────────────────────────────────────────────────
 const $ = id => document.getElementById(id);
 const scoreColor = s => s >= 90 ? 'var(--pass)' : s >= 70 ? 'var(--warn)' : 'var(--fail)';
+let _features = { audit_history: false, drift_detection: false, async_scanning: false };
 
 function showAlert(id, msg, type) {
   const el = $(id); el.className = 'alert alert-' + type;
   el.textContent = msg; el.style.display = 'block';
 }
 function hideAlert(id) { $(id).style.display = 'none'; }
+
+// Gate History/Drift tabs on /api/status — don't advertise features that aren't bound
+fetch('/api/status').then(r => r.json()).then(data => {
+  _features = data.features || _features;
+  document.querySelectorAll('[data-requires]').forEach(tab => {
+    const key = tab.dataset.requires;
+    if (_features[key]) tab.hidden = false;
+  });
+  const missing = [];
+  if (!_features.audit_history) missing.push('History/Drift (needs D1)');
+  if (!_features.async_scanning) missing.push('async account scans (needs Queue)');
+  const banner = $('features-banner');
+  if (missing.length && data.mode === 'stateless') {
+    banner.style.display = 'block';
+    banner.textContent = 'Running in stateless mode — ' + missing.join('; ') + '. Zone audit works without storage.';
+  }
+  const note = $('account-mode-note');
+  if (note) {
+    note.textContent = _features.async_scanning
+      ? 'Queue is enabled — account scans enqueue per-zone jobs (uses CF_API_TOKEN secret on the worker).'
+      : 'No Queue binding — account scan runs synchronously in this request (fine for small accounts).';
+  }
+}).catch(() => {});
 
 // ── Tabs ──────────────────────────────────────────────────────────────────────
 document.querySelectorAll('.tab').forEach(tab => {
@@ -341,11 +370,17 @@ function renderReport(data) {
   $('zone-name').textContent = data.zone_name ?? data.zone_id;
   const fv = data.framework_versions;
   $('framework-ver').textContent = fv ? (fv.nist_800_53 + ' · ' + fv.cis_controls) : '';
+  const meta = [];
+  if (s.scoring === 'severity_weighted') meta.push('Severity-weighted score (CRITICAL=10, HIGH=5, MEDIUM=3, LOW=1; WARNING=½)');
+  if (s.open_critical) meta.push(s.open_critical + ' open CRITICAL');
+  if (s.open_high) meta.push(s.open_high + ' open HIGH');
+  $('score-meta').textContent = meta.join(' · ');
   $('stat-grid').innerHTML = [
     ['Total', s.total_checks, ''],
     ['Pass',  s.passed,       'c-pass'],
     ['Fail',  s.failed,       'c-fail'],
     ['Warn',  s.warnings,     'c-warn'],
+    ['Error', s.errors ?? 0,  'c-na'],
   ].map(([l,v,c]) => \`<div class="stat"><div class="stat-val \${c}">\${v}</div><div class="stat-lbl">\${l}</div></div>\`).join('');
 
   buildCategoryFilters(data.findings);
@@ -396,8 +431,8 @@ function applyFilters() {
   if (_activeFilters.status !== 'ALL') findings = findings.filter(f => f.status === _activeFilters.status);
   if (_activeFilters.category !== 'ALL') findings = findings.filter(f => f.category === _activeFilters.category);
   if (_activeFilters.cis) findings = findings.filter(f => f.cis_controls?.length > 0);
-  // Sort: FAIL → WARNING → PASS → NA
-  const order = {FAIL:0,WARNING:1,PASS:2,NA:3};
+  // Sort: FAIL → WARNING → ERROR → PASS → NA
+  const order = {FAIL:0,WARNING:1,ERROR:2,PASS:3,NA:4};
   findings = [...findings].sort((a,b) => (order[a.status]??9) - (order[b.status]??9));
   $('findings-count').textContent = '(' + findings.length + ')';
   renderFindings(findings);
@@ -428,7 +463,7 @@ function renderFindings(findings) {
         \${c.implementation_groups?.length ? \`<div class="control-igs">\${c.implementation_groups.map(g=>\`<span class="ig">\${g}</span>\`).join('')}</div>\` : ''}
       </div>
     \`).join('');
-    const hasDetail = f.remediation || nistCards || cisCards;
+    const hasDetail = f.remediation || f.dashboard_hint || nistCards || cisCards;
     return \`
       <div class="finding \${f.status}" onclick="toggleFinding(this)">
         <div class="finding-main">
@@ -449,6 +484,7 @@ function renderFindings(findings) {
         \${hasDetail ? \`
         <div class="finding-detail">
           \${f.remediation ? \`<div class="detail-remediation">⚠ \${f.remediation}</div>\` : ''}
+          \${f.dashboard_hint ? \`<div style="font-size:.78rem;color:#666;margin:.4rem 0 .6rem">↗ \${f.dashboard_hint}</div>\` : ''}
           \${(nistCards || cisCards) ? \`
             <div class="controls-section-title">Framework controls</div>
             <div class="controls-grid">\${nistCards}\${cisCards}</div>
@@ -469,7 +505,7 @@ $('btn-download').addEventListener('click', () => {
   const blob = new Blob([JSON.stringify(_report, null, 2)], {type:'application/json'});
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
-  a.download = 'flareguard-' + (_report.zone_name ?? _report.zone_id ?? 'report') + '.json';
+  a.download = 'flareguard-' + (_report.zone_name ?? _report.zone_id_hash ?? 'report') + '.json';
   a.click();
 });
 
@@ -563,7 +599,7 @@ $('btn-drift').addEventListener('click', async () => {
       $('drift-content').innerHTML = \`<div class="alert alert-success">✓ No drift — configuration is unchanged between the two most recent audits. \${data.message ?? ''}</div>\`;
       return;
     }
-    const statusColor = {PASS:'var(--pass)',FAIL:'var(--fail)',WARNING:'var(--warn)',NA:'var(--na)'};
+    const statusColor = {PASS:'var(--pass)',FAIL:'var(--fail)',WARNING:'var(--warn)',NA:'var(--na)',ERROR:'#64748b'};
     const dangerous = data.changes.filter(c => c.to === 'FAIL');
     $('drift-content').innerHTML = \`
       \${dangerous.length ? \`<div class="alert alert-error">⚠ \${dangerous.length} check(s) regressed to FAIL since last audit.</div>\` : ''}

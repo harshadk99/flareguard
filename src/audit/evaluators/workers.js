@@ -1,9 +1,16 @@
-// Days without deployment before a worker is considered a zombie
-const ZOMBIE_THRESHOLD_DAYS = 90;
-// Env var name patterns that suggest secrets stored in plain text
-const SECRET_PATTERNS = [/password/i, /secret/i, /token/i, /key/i, /api_key/i, /credential/i, /auth/i, /private/i];
+/**
+ * Workers evaluator.
+ * Uses script list + per-script settings (bindings) + zone routes for real signal.
+ */
+import { pass, fail, na, error, unevaluable } from '../finding.js';
 
-export async function evaluateWorkers(check, api, _zoneId, accountId) {
+const ZOMBIE_THRESHOLD_DAYS = 90;
+const SECRET_PATTERNS = [
+  /password/i, /secret/i, /token/i, /api[_-]?key/i, /credential/i,
+  /auth/i, /private[_-]?key/i, /client[_-]?secret/i,
+];
+
+export async function evaluateWorkers(check, api, zoneId, accountId) {
   if (!accountId) {
     return na(check, 'Account ID is required for Worker checks. Provide account_id in your request.');
   }
@@ -12,57 +19,113 @@ export async function evaluateWorkers(check, api, _zoneId, accountId) {
   try {
     workers = await api.listWorkers(accountId);
   } catch (err) {
-    return na(check, `Could not list workers: ${err.message}`);
+    return unevaluable(check, err);
   }
 
   if (!Array.isArray(workers) || workers.length === 0) {
     return na(check, 'No Workers found for this account.');
   }
 
-  if (check.id === 'WRK-001') return checkZombies(check, workers);
-  if (check.id === 'WRK-002') return checkSecrets(check, workers);
+  if (check.id === 'WRK-001') return checkZombies(check, api, workers, zoneId);
+  if (check.id === 'WRK-002') return checkSecrets(check, api, workers, accountId);
   return na(check, `Worker check ${check.id} not implemented.`);
 }
 
-function checkZombies(check, workers) {
+async function checkZombies(check, api, workers, zoneId) {
+  let routed = new Set();
+  let routesAvailable = false;
+
+  if (zoneId) {
+    try {
+      const routes = await api.listWorkerRoutes(zoneId);
+      routesAvailable = true;
+      for (const r of routes ?? []) {
+        if (r.script) routed.add(r.script);
+      }
+    } catch (err) {
+      // Permission on routes — still evaluate staleness, but note limited visibility
+      if (err?.kind === 'permission' || err?.kind === 'auth') {
+        return unevaluable(check, err);
+      }
+    }
+  }
+
   const cutoff = new Date();
   cutoff.setDate(cutoff.getDate() - ZOMBIE_THRESHOLD_DAYS);
 
   const zombies = workers.filter(w => {
+    const name = w.id ?? w.script ?? w.script_name;
     const lastModified = w.modified_on ? new Date(w.modified_on) : null;
-    const hasRoutes = Array.isArray(w.routes) && w.routes.length > 0;
     const isStale = !lastModified || lastModified < cutoff;
-    // Zombie = stale AND no routes (orphaned script)
-    return isStale && !hasRoutes;
+    if (!isStale) return false;
+    if (routesAvailable) return !routed.has(name);
+    // Without route data, only flag scripts with empty/missing handlers and stale mtime
+    const handlers = w.handlers ?? w.usage_model;
+    return !handlers || (Array.isArray(handlers) && handlers.length === 0);
   });
 
   if (zombies.length === 0) {
-    return pass_(check, `No zombie workers detected among ${workers.length} script(s). All scripts are either recently updated or have active routes.`);
+    const routeNote = routesAvailable
+      ? ` Cross-checked ${routed.size} route(s) on this zone.`
+      : ' (zone routes unavailable — used script metadata only).';
+    return pass(check, `No zombie workers among ${workers.length} script(s).${routeNote}`);
   }
 
-  const names = zombies.map(w => w.id ?? w.script_name ?? 'unknown').join(', ');
-  return fail(check, `${zombies.length} zombie worker(s) detected (no routes, not updated in ${ZOMBIE_THRESHOLD_DAYS}+ days): ${names}`);
+  const names = zombies.map(w => w.id ?? w.script_name ?? 'unknown').slice(0, 10).join(', ');
+  const extra = zombies.length > 10 ? ` (+${zombies.length - 10} more)` : '';
+  return fail(
+    check,
+    `${zombies.length} zombie worker(s) (stale ≥${ZOMBIE_THRESHOLD_DAYS}d` +
+      `${routesAvailable ? ', no routes on this zone' : ''}): ${names}${extra}`
+  );
 }
 
-function checkSecrets(check, workers) {
+async function checkSecrets(check, api, workers, accountId) {
   const flagged = [];
-  for (const w of workers) {
-    const envKeys = Object.keys(w.bindings?.filter?.(b => b.type === 'plain_text').reduce((acc, b) => { acc[b.name] = true; return acc; }, {}) ?? {});
-    const suspicious = envKeys.filter(k => SECRET_PATTERNS.some(p => p.test(k)));
+  // Cap concurrent settings fetches to avoid blowing subrequest limits on large accounts
+  const batch = workers.slice(0, 40);
+  const results = await Promise.allSettled(
+    batch.map(w => {
+      const name = w.id ?? w.script ?? w.script_name;
+      return api.getWorkerSettings(accountId, name).then(settings => ({ name, settings }));
+    })
+  );
+
+  let fetched = 0;
+  let permissionErrors = 0;
+  for (const outcome of results) {
+    if (outcome.status === 'rejected') {
+      permissionErrors += 1;
+      continue;
+    }
+    fetched += 1;
+    const { name, settings } = outcome.value;
+    const bindings = settings?.bindings ?? [];
+    const plain = bindings.filter(b => b.type === 'plain_text' || b.type === 'plain-text');
+    const suspicious = plain
+      .map(b => b.name)
+      .filter(n => n && SECRET_PATTERNS.some(p => p.test(n)));
     if (suspicious.length > 0) {
-      flagged.push(`${w.id ?? w.script_name}: [${suspicious.join(', ')}]`);
+      flagged.push(`${name}: [${suspicious.join(', ')}]`);
     }
   }
 
-  if (flagged.length === 0) {
-    return pass_(check, `No plain-text environment variables with secret-like names found across ${workers.length} worker(s).`);
+  if (fetched === 0 && permissionErrors > 0) {
+    return error(
+      check,
+      'Token lacks permission for this check. Required: Workers Scripts Read. Could not read Worker settings (bindings).'
+    );
   }
-  return fail(check, `Potential secrets in plain-text env vars: ${flagged.join(' | ')}`);
-}
 
-function pass_(check, message) { return r(check, 'PASS', message); }
-function fail(check, message) { return r(check, 'FAIL', message, check.remediation); }
-function na(check, message) { return r(check, 'NA', message); }
-function r(check, status, message, remediation) {
-  return { id: check.id, name: check.name, category: check.category, service: check.service, severity: check.severity, nist_controls: check.nist_controls ?? [], status, message, remediation: status === 'FAIL' ? remediation : null };
+  if (fetched === 0) {
+    return na(check, 'Could not inspect Worker bindings for any script.');
+  }
+
+  if (flagged.length === 0) {
+    const truncated = workers.length > batch.length
+      ? ` (inspected first ${batch.length} of ${workers.length})`
+      : '';
+    return pass(check, `No plain-text secret-like bindings across ${fetched} worker(s)${truncated}.`);
+  }
+  return fail(check, `Potential secrets in plain-text bindings: ${flagged.join(' | ')}`);
 }

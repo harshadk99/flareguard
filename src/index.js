@@ -53,15 +53,34 @@ export default {
     if (reportMatch && method === 'GET') return handleReportDownload(reportMatch[1], env);
 
     // ── UI ──────────────────────────────────────────────────────────────────
+    const HTML_HEADERS = {
+      'Content-Type': 'text/html; charset=utf-8',
+      // Prevent MIME-type sniffing
+      'X-Content-Type-Options': 'nosniff',
+      // Block clickjacking
+      'X-Frame-Options': 'DENY',
+      // Prevent referrer leakage of credentials
+      'Referrer-Policy': 'strict-origin-when-cross-origin',
+      // Minimal CSP: no external scripts, inline styles only (dashboard uses inline JS)
+      'Content-Security-Policy': [
+        "default-src 'self'",
+        "script-src 'self' 'unsafe-inline'",   // inline JS in generated HTML (no CDN)
+        "style-src 'self' 'unsafe-inline'",    // inline styles
+        "img-src 'self' data: https://img.shields.io",
+        "connect-src 'self' https://api.cloudflare.com",
+        "frame-ancestors 'none'",
+        "base-uri 'self'",
+        "form-action 'self'",
+      ].join('; '),
+      // Disable browser features not needed by the tool
+      'Permissions-Policy': 'camera=(), microphone=(), geolocation=()',
+    };
+
     if (pathname === '/' || pathname === '/index.html') {
-      return new Response(generateLanding(), {
-        headers: { 'Content-Type': 'text/html; charset=utf-8' },
-      });
+      return new Response(generateLanding(), { headers: HTML_HEADERS });
     }
     if (pathname === '/audit') {
-      return new Response(generateDashboard(), {
-        headers: { 'Content-Type': 'text/html; charset=utf-8' },
-      });
+      return new Response(generateDashboard(), { headers: HTML_HEADERS });
     }
 
     return new Response(JSON.stringify({ error: 'Not found' }), {

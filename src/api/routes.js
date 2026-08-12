@@ -15,6 +15,7 @@ import { enqueueZoneScan } from '../queue/index.js';
 import { hashId } from '../utils/privacy.js';
 
 const JSON_HEADERS = { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' };
+const MAX_BODY_BYTES = 4 * 1024; // 4 KB — credentials + IDs never need more
 const json = (data, status = 200) => new Response(JSON.stringify(data), { status, headers: JSON_HEADERS });
 const err  = (msg, status = 400) => json({ error: msg }, status);
 
@@ -22,6 +23,16 @@ const err  = (msg, status = 400) => json({ error: msg }, status);
 const ZONE_ID_RE    = /^[a-f0-9]{32}$/i;
 const ACCOUNT_ID_RE = /^[a-f0-9]{32}$/i;
 const TOKEN_RE      = /^[a-zA-Z0-9_\-]{20,}$/;
+const AUDIT_ID_RE   = /^[a-zA-Z0-9_\-]{1,64}$/;   // D1 row IDs are short opaque strings
+const REPORT_KEY_RE = /^[a-zA-Z0-9_\-/]{1,256}$/; // R2 key: alphanumeric + safe chars
+
+async function parseBodyWithSizeGuard(request) {
+  const ct = request.headers.get('content-length');
+  if (ct && parseInt(ct, 10) > MAX_BODY_BYTES) return null;
+  const text = await request.text();
+  if (text.length > MAX_BODY_BYTES) return null;
+  try { return JSON.parse(text); } catch { return null; }
+}
 
 function validateInputs(body) {
   const errors = [];
@@ -38,8 +49,8 @@ function validateInputs(body) {
  * Body: { zone_id, api_token, account_id? }
  */
 export async function handleZoneAudit(request, env) {
-  const body = await request.json().catch(() => null);
-  if (!body) return err('Request body must be JSON.');
+  const body = await parseBodyWithSizeGuard(request);
+  if (!body) return err('Request body must be valid JSON and under 4 KB.');
   if (!body.zone_id) return err('zone_id is required.');
 
   const errors = validateInputs(body);
@@ -84,8 +95,8 @@ export async function handleZoneAudit(request, env) {
  * Body: { account_id, api_token }
  */
 export async function handleAccountAudit(request, env) {
-  const body = await request.json().catch(() => null);
-  if (!body) return err('Request body must be JSON.');
+  const body = await parseBodyWithSizeGuard(request);
+  if (!body) return err('Request body must be valid JSON and under 4 KB.');
   if (!body.account_id) return err('account_id is required for account-level scans.');
 
   const errors = validateInputs(body);
@@ -98,8 +109,9 @@ export async function handleAccountAudit(request, env) {
       const api = new CloudflareAPI(body.api_token);
       const zones = await api.listZones(body.account_id);
       // Enqueue: api_token goes into the queue message (in-flight, not stored in D1)
+      // Token intentionally excluded from queue messages — queue consumer uses CF_API_TOKEN secret
       await Promise.all(zones.map(z =>
-        enqueueZoneScan(env.SCAN_QUEUE, z.id, body.api_token, body.account_id)
+        enqueueZoneScan(env.SCAN_QUEUE, z.id, body.account_id)
       ));
       return json({ queued: true, zone_count: zones.length, message: `${zones.length} zone scan(s) enqueued.` });
     } catch (e) {
@@ -121,8 +133,8 @@ export async function handleAccountAudit(request, env) {
  * Actually calls the Cloudflare API — does NOT store anything.
  */
 export async function handleTestConnection(request, env) {
-  const body = await request.json().catch(() => null);
-  if (!body) return err('Request body must be JSON.');
+  const body = await parseBodyWithSizeGuard(request);
+  if (!body) return err('Request body must be valid JSON and under 4 KB.');
 
   const errors = validateInputs(body);
   if (errors.length) return err(errors.join(' '));
@@ -166,6 +178,7 @@ export async function handleHistory(zoneId, env) {
  * GET /api/audit/:auditId/findings
  */
 export async function handleAuditFindings(auditId, env) {
+  if (!AUDIT_ID_RE.test(auditId)) return err('Invalid audit ID format.', 400);
   if (!hasDB(env)) return json({ findings: [], storage_enabled: false });
   try {
     const findings = await getFindings(env, auditId);
@@ -196,9 +209,11 @@ export async function handleDrift(zoneId, env) {
  * GET /api/report/:key
  */
 export async function handleReportDownload(key, env) {
+  const decodedKey = decodeURIComponent(key);
+  if (!REPORT_KEY_RE.test(decodedKey)) return err('Invalid report key format.', 400);
   if (!env.REPORTS) return err('Report storage not enabled.', 404);
   const storage = new ReportStorage(env.REPORTS);
-  const report = await storage.getReport(decodeURIComponent(key));
+  const report = await storage.getReport(decodedKey);
   if (!report) return err('Report not found.', 404);
   return json(report);
 }

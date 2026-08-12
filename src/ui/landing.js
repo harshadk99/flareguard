@@ -146,7 +146,7 @@ footer a{color:var(--orange);text-decoration:none}
 <div class="hero">
   <div class="hero-eyebrow">Open Source · MIT License</div>
   <h1>Security posture for<br/><span>the Cloudflare stack</span></h1>
-  <p>Wiz covers AWS. Orca covers GCP. Prisma covers Azure.<br/>Nobody audits your Cloudflare configuration — until now.</p>
+  <p>Mainstream CSPM tools are built for AWS, GCP, and Azure infrastructure.<br/>Nobody audits your Cloudflare configuration — until now.</p>
   <a class="btn-cta" href="/audit">Audit your zone →</a>
   <a class="btn-ghost" href="https://github.com/harshadk99/flareguard" target="_blank">View on GitHub</a>
 
@@ -164,18 +164,18 @@ footer a{color:var(--orange);text-decoration:none}
 <!-- THE GAP -->
 <section>
   <div class="section-label">The problem</div>
-  <div class="section-title">Every CSPM tool has a Cloudflare blind spot</div>
-  <div class="section-sub">Mainstream tools are built for cloud infrastructure — S3 buckets, VMs, IAM policies. Cloudflare's control plane is invisible to all of them.</div>
+  <div class="section-title">The coverage gap nobody talks about</div>
+  <div class="section-sub">Mainstream tools are built for cloud infrastructure — S3 buckets, VMs, IAM policies. Cloudflare's control plane falls outside their scope entirely.</div>
   <div class="gap-grid">
     <div class="gap-card">
-      <div class="tool">Wiz / Orca / Prisma Cloud</div>
+      <div class="tool">Cloud CSPM tools</div>
       <div class="coverage">AWS · GCP · Azure infrastructure</div>
-      <div class="blind">Blind to Cloudflare WAF, Zero Trust, Workers</div>
+      <div class="blind">No coverage for Cloudflare WAF, Zero Trust, Workers, or DNS posture</div>
     </div>
     <div class="gap-card">
-      <div class="tool">FireMon / SolarWinds NCM</div>
-      <div class="coverage">On-prem firewall policy management</div>
-      <div class="blind">Blind to Cloudflare SASE and edge runtime</div>
+      <div class="tool">Network config management</div>
+      <div class="coverage">On-prem firewall and device policy</div>
+      <div class="blind">Not designed for Cloudflare SASE or serverless edge runtime</div>
     </div>
     <div class="gap-card">
       <div class="tool">Cloudflare Dashboard</div>
@@ -184,7 +184,7 @@ footer a{color:var(--orange);text-decoration:none}
     </div>
     <div class="gap-card highlight">
       <div class="tool">FlareGuard</div>
-      <div class="coverage">Cloudflare Workers · WAF · DNS · Zero Trust · Page Shield · Logpush</div>
+      <div class="coverage">Workers · WAF · DNS · Zero Trust · Page Shield · Logpush</div>
       <div class="blind">✓ Built specifically for the Cloudflare control plane</div>
     </div>
   </div>

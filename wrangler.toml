@@ -7,7 +7,7 @@ account_id = "dfaa0c35a2dcbc8f5beac03052a5ddd1"
 
 # ── Environment Variables (always present) ─────────────────────────────────────
 [vars]
-ENVIRONMENT = "development"
+ENVIRONMENT = "production"
 CACHE_TTL_SECONDS = "300"
 
 # ── OPTIONAL: Persistent Storage ───────────────────────────────────────────────

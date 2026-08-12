@@ -18,7 +18,7 @@
 
 ## The Problem
 
-Mainstream CSPM tools — Wiz, Orca, Prisma Cloud — are designed for cloud infrastructure: AWS S3 buckets, Azure VMs, GCP IAM policies. They have no visibility into Cloudflare's control plane.
+Mainstream CSPM tools are designed for cloud infrastructure: AWS S3 buckets, Azure VMs, GCP IAM policies. They have no visibility into Cloudflare's control plane.
 
 Yet millions of organizations now run their security perimeter *on* Cloudflare: TLS termination, WAF, Zero Trust Access, Workers, AI Gateway. A misconfigured Cloudflare zone — DNSSEC disabled, WAF in detect-only mode, no MFA on Access applications — exposes the same blast radius as a misconfigured cloud resource. **No existing tool catches it.**
 

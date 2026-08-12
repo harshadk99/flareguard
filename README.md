@@ -1,6 +1,6 @@
 # FlareGuard
 
-**The first open-source Cloud Security Posture Management (CSPM) tool purpose-built for the Cloudflare developer ecosystem.**
+**An open-source security configuration auditor for the Cloudflare control plane** — zone settings, WAF, DNS, Zero Trust, Workers, and more. Runs as a Worker; paste a read-only API token and get a scored report.
 
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Live Demo](https://img.shields.io/badge/demo-live-brightgreen.svg)](https://flareguard.harshad-surfer.workers.dev/)
@@ -61,7 +61,7 @@ Selected checks:
 |----|------|----------|-----|------|
 | CF-SSL-001 | SSL/TLS mode is Full (Strict) | HIGH | — | SC-8, SC-13 |
 | CF-HSTS-001 | HSTS is enabled | HIGH | 3.10 | SC-8(1) |
-| CF-HSTS-002 | HSTS max-age ≥ 1 year (preload-eligible) | MEDIUM | 3.10 | SC-8(1) |
+| CF-HSTS-002 | HSTS max-age ≥ 6 months (15552000s) | MEDIUM | 3.10 | SC-8(1) |
 | CF-ORIGIN-001 | Authenticated Origin Pulls (mTLS) enabled | HIGH | 3.10 | SC-8, MA-9 |
 | CF-WAF-001 | OWASP Core Rule Set enabled | CRITICAL | — | SI-3, SC-7 |
 | CF-WAF-002 | WAF in block mode, not detect-only | HIGH | — | SI-3, SC-7 |
@@ -93,10 +93,10 @@ POST /api/audit/zone
          │       ├── Dispatcher     ← routes check.service → evaluator
          │       │
          │       ├── zone-setting   (SSL, TLS, HSTS, HTTP/2+3, mTLS, IPv6...)
-         │       ├── waf            (OWASP CRS, block mode)
-         │       ├── dnssec         (DNSSEC status + algorithm)
+         │       ├── waf            (managed rulesets / OWASP CRS, detect-only overrides)
+         │       ├── dnssec         (DNSSEC status)
          │       ├── bot            (Bot Fight Mode / Bot Management)
-         │       ├── rate-limit     (rate limiting rules)
+         │       ├── rate-limit     (http_ratelimit phase rulesets)
          │       ├── access         (Zero Trust MFA, IdP — real API calls)
          │       ├── workers        (zombie detection, secret scanning)
          │       ├── page-shield    (Page Shield status + policy mode)
@@ -112,7 +112,7 @@ POST /api/audit/zone
 
 **Stateless by default.** The audit runs entirely in-memory. Credentials are used once and discarded. Optional persistent storage (D1 + KV + R2 + Queues) activates only when bindings are present — enabling audit history, drift detection, and async account-wide scanning.
 
-**Privacy-first.** API tokens never leave the request lifecycle. Zone and account IDs are hashed (SHA-256, truncated to 16 hex chars) before any storage write. Raw identifiers are never persisted.
+**Privacy-first.** API tokens never leave the request lifecycle. Zone and account IDs are hashed (SHA-256, first 32 hex chars) before any storage write. JSON exports omit plaintext IDs unless you pass `include_raw_ids: true`.
 
 ---
 
@@ -247,14 +247,14 @@ Uncomment the binding sections in `wrangler.toml` and redeploy.
 | URL | Description |
 |-----|-------------|
 | `/` | Landing page — gap narrative, demo findings preview, checks grid, YAML example |
-| `/audit` | Audit tool — zone scan, account scan, history, drift detection |
+| `/audit` | Audit tool — zone scan, account scan; History/Drift tabs only if D1 is bound |
 
 **Zone audit features:**
-- Security score ring with zone name and active framework versions
-- Findings sorted FAIL → WARNING → PASS → NA
-- Filter by status (Fail / Warning / Pass / N/A), category (SSL/TLS, WAF, Zero Trust…), or CIS-mapped only
-- **Expandable findings** — click any finding to reveal full NIST and CIS control cards with title, family, description, reference URL, and Implementation Group badges
-- Download full JSON report (includes `resolved_controls` on every finding)
+- Security score ring (severity-weighted) with open CRITICAL/HIGH counts
+- Findings sorted FAIL → WARNING → ERROR → PASS → NA
+- Filter by status (including Error), category, or CIS-mapped only
+- Expandable findings with remediation, dashboard path hints, and NIST/CIS cards
+- Download JSON report (zone/account IDs hashed by default)
 
 **Account scan features:**
 - Ranked zone risk table: worst score first

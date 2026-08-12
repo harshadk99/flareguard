@@ -30,14 +30,14 @@ const CHECK = {
 
 const HSTS_CHECK = {
   id: 'CF-HSTS-002',
-  name: 'HSTS max-age meets preload eligibility (at least 1 year / 31536000 seconds)',
+  name: 'HSTS max-age is at least 6 months (15552000 seconds)',
   category: 'Transport Security',
   service: 'zone-setting',
   setting: 'security_header',
-  expect_nested: { path: 'strict_transport_security.max_age', min: 31536000 },
+  expect_nested: { path: 'strict_transport_security.max_age', min: 15552000 },
   severity: 'MEDIUM',
   nist_controls: ['SC-8'],
-  remediation: 'Set HSTS max-age to at least 31536000 seconds (1 year).',
+  remediation: 'Set HSTS max-age to at least 15552000 seconds (180 days / 6 months).',
 };
 
 const RL_CHECK = {
@@ -287,10 +287,25 @@ describe('CF-RL-001 rulesets API', () => {
   });
 });
 
-describe('CF-HSTS-002 preload threshold', () => {
+describe('CF-HSTS-002 six-month floor', () => {
   afterEach(() => mock.restoreAll());
 
-  it('FAILs 180-day max_age (15552000) against preload floor', async () => {
+  it('FAILs when max_age is below 6 months (e.g. 90 days)', async () => {
+    mockFetchSequence([{
+      ok: true,
+      status: 200,
+      body: {
+        success: true,
+        result: { value: { strict_transport_security: { enabled: true, max_age: 7776000 } } },
+      },
+    }]);
+    const api = new CloudflareAPI('test-token-abcdefghijklmnopqrstuvwxyz');
+    const finding = await evaluateZoneSetting(HSTS_CHECK, api, 'a'.repeat(32));
+    assert.equal(finding.status, 'FAIL');
+    assert.match(finding.message, /7776000/);
+  });
+
+  it('PASSes when max_age is exactly 6 months (15552000)', async () => {
     mockFetchSequence([{
       ok: true,
       status: 200,
@@ -301,31 +316,16 @@ describe('CF-HSTS-002 preload threshold', () => {
     }]);
     const api = new CloudflareAPI('test-token-abcdefghijklmnopqrstuvwxyz');
     const finding = await evaluateZoneSetting(HSTS_CHECK, api, 'a'.repeat(32));
-    assert.equal(finding.status, 'FAIL');
-    assert.match(finding.message, /15552000/);
+    assert.equal(finding.status, 'PASS');
   });
 
-  it('PASSes when max_age >= 31536000', async () => {
+  it('PASSes values above the six-month floor (e.g. 1 year)', async () => {
     mockFetchSequence([{
       ok: true,
       status: 200,
       body: {
         success: true,
         result: { value: { strict_transport_security: { enabled: true, max_age: 31536000 } } },
-      },
-    }]);
-    const api = new CloudflareAPI('test-token-abcdefghijklmnopqrstuvwxyz');
-    const finding = await evaluateZoneSetting(HSTS_CHECK, api, 'a'.repeat(32));
-    assert.equal(finding.status, 'PASS');
-  });
-
-  it('PASSes values above the preload floor (e.g. 2 years)', async () => {
-    mockFetchSequence([{
-      ok: true,
-      status: 200,
-      body: {
-        success: true,
-        result: { value: { strict_transport_security: { enabled: true, max_age: 63072000 } } },
       },
     }]);
     const api = new CloudflareAPI('test-token-abcdefghijklmnopqrstuvwxyz');

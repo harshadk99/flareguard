@@ -184,18 +184,18 @@
   remediation: Enable HSTS in SSL/TLS > Edge Certificates > HTTP Strict Transport Security (HSTS).
 
 - id: CF-HSTS-002
-  name: HSTS max-age meets preload eligibility (at least 1 year / 31536000 seconds)
+  name: HSTS max-age is at least 6 months (15552000 seconds)
   category: Transport Security
   service: zone-setting
   setting: security_header
   expect_nested:
     path: strict_transport_security.max_age
-    min: 31536000
+    min: 15552000
   severity: MEDIUM
   nist_controls: [SC-8, "SC-8(1)"]
   cis_controls: ["3.10"]
   dashboard_path: ssl-tls/edge-certificates
-  remediation: Set HSTS max-age to at least 31536000 seconds (1 year) to meet browser HSTS preload eligibility requirements.
+  remediation: Set HSTS max-age to at least 15552000 seconds (180 days / 6 months) in SSL/TLS > Edge Certificates.
 
 - id: CF-HTTPS-002
   name: Automatic HTTPS Rewrites is enabled

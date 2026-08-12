@@ -5,7 +5,7 @@ export function generateLanding() {
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>FlareGuard — Cloudflare Security Posture Management</title>
-<meta name="description" content="The first open-source CSPM built for the Cloudflare developer ecosystem. 29 checks mapped to NIST SP 800-53 and CIS Controls v8. Zero infrastructure required."/>
+<meta name="description" content="Open-source Cloudflare configuration auditor. 29 checks mapped to NIST SP 800-53 and CIS Controls v8. Runs as a Worker — no infrastructure required."/>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -146,7 +146,7 @@ footer a{color:var(--orange);text-decoration:none}
 <div class="hero">
   <div class="hero-eyebrow">Open Source · MIT License</div>
   <h1>Security posture for<br/><span>the Cloudflare stack</span></h1>
-  <p>Mainstream CSPM tools are built for AWS, GCP, and Azure infrastructure.<br/>Nobody audits your Cloudflare configuration — until now.</p>
+  <p>Mainstream CSPM tools cover AWS, GCP, and Azure infrastructure.<br/>FlareGuard audits your Cloudflare zone configuration against a YAML baseline.</p>
   <a class="btn-cta" href="/audit">Audit your zone →</a>
   <a class="btn-ghost" href="https://github.com/harshadk99/flareguard" target="_blank">View on GitHub</a>
 
@@ -195,8 +195,8 @@ footer a{color:var(--orange);text-decoration:none}
 <!-- SAMPLE RESULT -->
 <section>
   <div class="section-label">See it in action</div>
-  <div class="section-title">A real audit, in under 3 seconds</div>
-  <div class="section-sub">FlareGuard calls the Cloudflare API, evaluates your configuration against the baseline, and returns a structured report with remediation guidance and framework mappings.</div>
+  <div class="section-title">What an audit report looks like</div>
+  <div class="section-sub">FlareGuard calls the Cloudflare API, evaluates your configuration against the baseline, and returns findings with remediation hints and NIST/CIS mappings.</div>
   <div class="demo-section">
     <div class="demo-header">
       <div class="demo-score">
@@ -221,7 +221,7 @@ footer a{color:var(--orange);text-decoration:none}
         </div>
         <div class="df-info">
           <div class="df-name">CF-WAF-001 · OWASP Core Rule Set is enabled</div>
-          <div class="df-msg">WAF package not found or not enabled — OWASP CRS protection is inactive</div>
+          <div class="df-msg">OWASP Core Ruleset is not deployed on the http_request_firewall_managed phase</div>
           <div class="df-controls">
             <span class="df-ctrl">NIST SI-3</span>
             <span class="df-ctrl">NIST SC-7</span>
@@ -407,8 +407,8 @@ footer a{color:var(--orange);text-decoration:none}
     <div class="step">
       <div class="step-num">3</div>
       <div class="step-body">
-        <h4>Get a structured, compliance-ready report</h4>
-        <p>Severity-weighted score, per-finding remediation with dashboard path hints, and resolved control references. Download as JSON. Enable D1 if you want history and status-diff drift tracking.</p>
+        <h4>Download a structured report</h4>
+        <p>Severity-weighted score, per-finding remediation with dashboard path hints, and resolved control references. JSON export hashes zone/account IDs by default. History/drift need optional D1.</p>
       </div>
     </div>
   </div>
@@ -430,8 +430,8 @@ footer a{color:var(--orange);text-decoration:none}
 
 <!-- CTA -->
 <div class="cta-section">
-  <h2>Your Cloudflare zone has blind spots.<br/>Find them in 3 seconds.</h2>
-  <p>Free, open-source, stateless. No account required.</p>
+  <h2>Audit your Cloudflare zone configuration.</h2>
+  <p>Open source, stateless by default. Paste a read-only token — nothing is stored unless you enable D1.</p>
   <a class="btn-cta" href="/audit">Audit your zone now →</a>
   <a class="btn-ghost" href="https://github.com/harshadk99/flareguard" target="_blank" style="margin-left:.75rem">Star on GitHub</a>
 </div>

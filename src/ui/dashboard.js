@@ -145,7 +145,7 @@ export function generateDashboard() {
 <nav>
   <div>
     <a class="logo" href="/">FlareGuard</a>
-    <div class="nav-sub">Cloudflare Security Posture Management</div>
+    <div class="nav-sub">Cloudflare configuration auditor</div>
   </div>
   <a class="back" href="/">← Back to overview</a>
 </nav>

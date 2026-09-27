@@ -39,12 +39,13 @@ FlareGuard runs as a Cloudflare Worker — the same serverless runtime it audits
 
 ---
 
-## Security Baseline — 29 Checks Across 9 Categories
+## Security Baseline — 29 Checks Across 12 Categories
 
 | Category | Checks | Severity Range | Framework Coverage |
 |----------|--------|----------------|--------------------|
 | SSL/TLS | 5 | HIGH → LOW | NIST SC-8, SC-13 |
-| Transport Security | 6 | HIGH → MEDIUM | NIST SC-8(1), CIS 3.10 |
+| Security | 3 | MEDIUM → LOW | NIST SI-3, SI-4, SC-7, SI-19 |
+| Transport Security | 5 | HIGH → MEDIUM | NIST SC-8(1), CIS 3.10 |
 | WAF | 2 | CRITICAL → HIGH | NIST SI-3, SC-7 |
 | DNS | 1 | HIGH | NIST SC-20 |
 | Bot Protection | 1 | HIGH | NIST SC-5 |

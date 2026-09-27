@@ -152,7 +152,7 @@ footer a{color:var(--orange);text-decoration:none}
 
   <div class="stats-bar">
     <div class="stat-item"><div class="stat-num">29</div><div class="stat-label">Security checks</div></div>
-    <div class="stat-item"><div class="stat-num">9</div><div class="stat-label">Categories</div></div>
+    <div class="stat-item"><div class="stat-num">12</div><div class="stat-label">Categories</div></div>
     <div class="stat-item"><div class="stat-num">NIST</div><div class="stat-label">SP 800-53 Rev 5</div></div>
     <div class="stat-item"><div class="stat-num">CIS</div><div class="stat-label">Controls v8</div></div>
     <div class="stat-item"><div class="stat-num">0</div><div class="stat-label">Infrastructure needed</div></div>
@@ -279,7 +279,7 @@ footer a{color:var(--orange);text-decoration:none}
 <!-- CHECKS -->
 <section id="checks">
   <div class="section-label">Security baseline</div>
-  <div class="section-title">29 checks across 9 categories</div>
+  <div class="section-title">29 checks across 12 categories</div>
   <div class="section-sub">Every check maps to NIST SP 800-53 Rev 5 and/or CIS Controls v8. The baseline is a YAML file — adding a check requires no code.</div>
   <div class="checks-grid">
     <div class="check-category">
@@ -293,7 +293,7 @@ footer a{color:var(--orange);text-decoration:none}
       </ul>
     </div>
     <div class="check-category">
-      <h4>Transport Security <span class="cat-count">6</span></h4>
+      <h4>Transport Security <span class="cat-count">5</span></h4>
       <ul class="check-list">
         <li><span class="sev sev-HIGH">HIGH</span>HSTS enabled (CIS 3.10)</li>
         <li><span class="sev sev-MEDIUM">MED</span>HSTS max-age ≥ 6 months</li>
@@ -346,12 +346,28 @@ footer a{color:var(--orange);text-decoration:none}
       </ul>
     </div>
     <div class="check-category">
-      <h4>Security / Content <span class="cat-count">5</span></h4>
+      <h4>Security <span class="cat-count">3</span></h4>
       <ul class="check-list">
-        <li><span class="sev sev-HIGH">HIGH</span>Bot Fight Mode / Bot Management</li>
-        <li><span class="sev sev-MEDIUM">MED</span>Rate limiting rules configured</li>
         <li><span class="sev sev-MEDIUM">MED</span>Browser Integrity Check</li>
         <li><span class="sev sev-MEDIUM">MED</span>Security Level ≥ Medium</li>
+        <li><span class="sev sev-LOW">LOW</span>Email Obfuscation</li>
+      </ul>
+    </div>
+    <div class="check-category">
+      <h4>Bot Protection <span class="cat-count">1</span></h4>
+      <ul class="check-list">
+        <li><span class="sev sev-HIGH">HIGH</span>Bot Fight Mode / Bot Management</li>
+      </ul>
+    </div>
+    <div class="check-category">
+      <h4>Rate Limiting <span class="cat-count">1</span></h4>
+      <ul class="check-list">
+        <li><span class="sev sev-MEDIUM">MED</span>Rate limiting rules configured</li>
+      </ul>
+    </div>
+    <div class="check-category">
+      <h4>Content Security <span class="cat-count">1</span></h4>
+      <ul class="check-list">
         <li><span class="sev sev-LOW">LOW</span>Hotlink Protection (CIS 9.3)</li>
       </ul>
     </div>

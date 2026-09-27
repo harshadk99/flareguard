@@ -28,11 +28,11 @@
   "license": "MIT",
   "dependencies": {
     "dotenv": "^16.3.1",
-    "js-yaml": "^4.1.0",
+    "js-yaml": "^4.3.2",
     "node-fetch": "^3.3.2"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "^4.20260628.1",
-    "wrangler": "^4.105.0"
+    "@cloudflare/workers-types": "^5.20260927.1",
+    "wrangler": "^4.142.0"
   }
 }

@@ -223,6 +223,12 @@ npm run dev
 
 ### Deploy to Cloudflare (stateless, zero config)
 
+One click — deploys to **your** Cloudflare account, no setup:
+
+[![Deploy to Cloudflare](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/harshadk99/flareguard)
+
+Or from the CLI:
+
 ```bash
 npx wrangler login
 npm run deploy

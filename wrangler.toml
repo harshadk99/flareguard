@@ -3,7 +3,9 @@ main = "src/index.js"
 compatibility_date = "2024-07-23"
 compatibility_flags = ["nodejs_compat"]
 
-account_id = "dfaa0c35a2dcbc8f5beac03052a5ddd1"
+# account_id is intentionally omitted so the one-click "Deploy to Cloudflare"
+# button and `wrangler deploy` target the DEPLOYING user's own account.
+# If you have multiple Cloudflare accounts, set CLOUDFLARE_ACCOUNT_ID in your env.
 
 # ── Environment Variables (always present) ─────────────────────────────────────
 [vars]

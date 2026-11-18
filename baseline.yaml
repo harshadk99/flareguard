@@ -213,7 +213,7 @@
 - id: CF-ORIGIN-001
   name: Authenticated Origin Pulls (mTLS) is enabled
   category: Transport Security
-  service: zone-setting
+  service: origin-pull        # context-aware: N/A when the zone is Pages/Workers-only (no origin hop)
   setting: tls_client_auth
   expect: "on"
   severity: HIGH
@@ -298,13 +298,7 @@
   cis_controls: ["9.3"]
   remediation: Enable Hotlink Protection in Scrape Shield to prevent unauthorized embedding of your content.
 
-- id: CF-CERT-001
-  name: Certificate Transparency Monitoring is enabled
-  category: Transport Security
-  service: zone-setting
-  setting: certificate_transparency_monitoring
-  expect: "on"
-  severity: MEDIUM
-  nist_controls: [SC-17, SI-4]
-  cis_controls: ["3.10"]
-  remediation: Enable Certificate Transparency Monitoring in SSL/TLS > Edge Certificates to receive alerts for unauthorized certificates.
+# CF-CERT-001 (Certificate Transparency Monitoring) removed 2026-11-18: Cloudflare
+# retired the `certificate_transparency_monitoring` zone setting, so the check
+# always returned ERROR ("Undefined zone setting"). CT monitoring is now managed
+# per-certificate, not via a zone toggle — revisit as a certificate-API check.

@@ -39,13 +39,13 @@ FlareGuard runs as a Cloudflare Worker — the same serverless runtime it audits
 
 ---
 
-## Security Baseline — 29 Checks Across 12 Categories
+## Security Baseline — 28 Checks Across 12 Categories
 
 | Category | Checks | Severity Range | Framework Coverage |
 |----------|--------|----------------|--------------------|
 | SSL/TLS | 5 | HIGH → LOW | NIST SC-8, SC-13 |
 | Security | 3 | MEDIUM → LOW | NIST SI-3, SI-4, SC-7, SI-19 |
-| Transport Security | 5 | HIGH → MEDIUM | NIST SC-8(1), CIS 3.10 |
+| Transport Security | 4 | HIGH → MEDIUM | NIST SC-8(1), CIS 3.10 |
 | WAF | 2 | CRITICAL → HIGH | NIST SI-3, SC-7 |
 | DNS | 1 | HIGH | NIST SC-20 |
 | Bot Protection | 1 | HIGH | NIST SC-5 |
@@ -74,7 +74,6 @@ Selected checks:
 | ZT-002 | Identity provider configured | HIGH | — | IA-2, IA-8 |
 | WRK-001 | No zombie workers (stale + unrouted) | HIGH | — | CM-2, CM-8 |
 | WRK-002 | No plain-text secret-like environment variables | CRITICAL | — | IA-5, SC-12 |
-| CF-CERT-001 | Certificate Transparency Monitoring enabled | MEDIUM | 3.10 | SC-17 |
 
 ---
 
@@ -90,7 +89,7 @@ POST /api/audit/zone
          │
          ├── Audit Engine
          │       │
-         │       ├── baseline.yaml  ← 29 checks, declarative YAML
+         │       ├── baseline.yaml  ← 28 checks, declarative YAML
          │       ├── Dispatcher     ← routes check.service → evaluator
          │       │
          │       ├── zone-setting   (SSL, TLS, HSTS, HTTP/2+3, mTLS, IPv6...)
@@ -121,7 +120,7 @@ POST /api/audit/zone
 
 ```
 flareguard/
-├── baseline.yaml                   # 29 security checks — the only file you edit to add checks
+├── baseline.yaml                   # 28 security checks — the only file you edit to add checks
 ├── mappings/
 │   ├── index.yaml                  # declares active framework version per framework
 │   ├── nist-800-53-r5.yaml         # NIST SP 800-53 Rev 5 — source of truth for 24 controls
@@ -220,6 +219,28 @@ npm install
 npm run dev
 # → http://localhost:8787
 ```
+
+### Run as a CLI (`npx`)
+
+Audit a zone straight from your terminal or CI — no deploy, nothing stored, same engine as the Worker:
+
+```bash
+export CLOUDFLARE_API_TOKEN=<read-only token>
+npx flareguard audit --zone <zone-id>
+
+# every zone in an account (also runs Zero Trust + Worker checks):
+npx flareguard audit --account <account-id>
+```
+
+Gate a pipeline on the result:
+
+```bash
+npx flareguard audit --zone <zone-id> --fail-on high   # exit 1 on any open HIGH or CRITICAL
+npx flareguard audit --zone <zone-id> --min-score 80   # exit 1 when the score is below 80
+npx flareguard audit --zone <zone-id> --json           # machine-readable report
+```
+
+Exit codes: `0` ok (and any gate passed) · `1` gate failed · `2` usage / auth / runtime error. The token lives only in memory for the run; IDs are shown as one-way hashes.
 
 ### Deploy to Cloudflare (stateless, zero config)
 
@@ -351,7 +372,7 @@ For checks that require custom API calls, add an evaluator in `src/audit/evaluat
 
 Cloudflare serves over 20% of the internet. The organizations running on it — from startups to enterprises — now use Cloudflare as their security perimeter, not just a CDN. Zero Trust Access replaces VPNs. Workers replace origin servers. AI Gateway proxies LLM traffic.
 
-No compliance framework auditor, no CSPM vendor, and no existing open-source tool has kept pace with this shift. FlareGuard is an attempt to close that gap — starting with the 29 controls that matter most, mapped to the frameworks that enterprises actually use for compliance evidence.
+No compliance framework auditor, no CSPM vendor, and no existing open-source tool has kept pace with this shift. FlareGuard is an attempt to close that gap — starting with the 28 controls that matter most, mapped to the frameworks that enterprises actually use for compliance evidence.
 
 ---
 

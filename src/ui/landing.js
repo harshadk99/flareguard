@@ -5,7 +5,7 @@ export function generateLanding() {
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>FlareGuard — Cloudflare Security Posture Management</title>
-<meta name="description" content="Open-source Cloudflare configuration auditor. 29 checks mapped to NIST SP 800-53 and CIS Controls v8. Runs as a Worker — no infrastructure required."/>
+<meta name="description" content="Open-source Cloudflare configuration auditor. 28 checks mapped to NIST SP 800-53 and CIS Controls v8. Runs as a Worker — no infrastructure required."/>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -151,7 +151,7 @@ footer a{color:var(--orange);text-decoration:none}
   <a class="btn-ghost" href="https://github.com/harshadk99/flareguard" target="_blank">View on GitHub</a>
 
   <div class="stats-bar">
-    <div class="stat-item"><div class="stat-num">29</div><div class="stat-label">Security checks</div></div>
+    <div class="stat-item"><div class="stat-num">28</div><div class="stat-label">Security checks</div></div>
     <div class="stat-item"><div class="stat-num">12</div><div class="stat-label">Categories</div></div>
     <div class="stat-item"><div class="stat-num">NIST</div><div class="stat-label">SP 800-53 Rev 5</div></div>
     <div class="stat-item"><div class="stat-num">CIS</div><div class="stat-label">Controls v8</div></div>
@@ -203,7 +203,7 @@ footer a{color:var(--orange);text-decoration:none}
         <div class="score-circle">68%</div>
         <div>
           <div style="font-weight:700;font-size:.95rem">example.com</div>
-          <div style="font-size:.75rem;color:var(--muted);margin-top:.1rem">Zone audit · 29 checks · NIST SP 800-53 Rev 5 · CIS Controls v8</div>
+          <div style="font-size:.75rem;color:var(--muted);margin-top:.1rem">Zone audit · 28 checks · NIST SP 800-53 Rev 5 · CIS Controls v8</div>
         </div>
       </div>
       <div class="demo-stats">
@@ -279,7 +279,7 @@ footer a{color:var(--orange);text-decoration:none}
 <!-- CHECKS -->
 <section id="checks">
   <div class="section-label">Security baseline</div>
-  <div class="section-title">29 checks across 12 categories</div>
+  <div class="section-title">28 checks across 12 categories</div>
   <div class="section-sub">Every check maps to NIST SP 800-53 Rev 5 and/or CIS Controls v8. The baseline is a YAML file — adding a check requires no code.</div>
   <div class="checks-grid">
     <div class="check-category">
@@ -416,7 +416,7 @@ footer a{color:var(--orange);text-decoration:none}
     <div class="step">
       <div class="step-num">2</div>
       <div class="step-body">
-        <h4>Engine evaluates 29 checks in parallel</h4>
+        <h4>Engine evaluates 28 checks in parallel</h4>
         <p>The audit engine dispatches checks to typed evaluators — each making real Cloudflare API calls. Results are scored and enriched with NIST and CIS metadata in a single pass.</p>
       </div>
     </div>

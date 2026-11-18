@@ -90,6 +90,7 @@
   category: WAF
   service: waf
   severity: CRITICAL
+  min_plan: pro          # Managed OWASP CRS requires Pro+; N/A (not FAIL) on Free
   nist_controls: [SI-3, SC-7]
   dashboard_path: security/waf/managed-rules
   remediation: Enable the Cloudflare OWASP Core Ruleset in Security > WAF > Managed rules (requires Pro or higher).
@@ -99,6 +100,7 @@
   category: WAF
   service: waf
   severity: HIGH
+  min_plan: pro          # Depends on managed rulesets (Pro+); N/A on Free
   nist_controls: [SI-3, SC-7]
   dashboard_path: security/waf/managed-rules
   remediation: Ensure managed WAF rulesets are not overridden to Log/Simulate. Use Managed Default or Block in Security > WAF > Managed rules.
@@ -259,6 +261,7 @@
   category: Observability
   service: logpush
   severity: HIGH
+  min_plan: enterprise   # Zone HTTP Logpush is Enterprise-only; N/A below that
   nist_controls: [AU-2, AU-9, SI-4]
   cis_controls: ["6.1", "8.2"]
   dashboard_path: analytics/logs/logpush
@@ -278,6 +281,7 @@
   category: Observability
   service: page-shield
   severity: MEDIUM
+  min_plan: business     # Page Shield policy enforcement requires Business+; N/A below
   nist_controls: [SI-3, SA-9]
   cis_controls: ["8.2"]
   remediation: Enable Page Shield policy enforcement in Security > Page Shield > Policies to block unapproved scripts.

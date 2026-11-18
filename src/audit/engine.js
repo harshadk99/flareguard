@@ -85,11 +85,50 @@ export async function runAccountAudit(accountId, apiToken, env, cache, opts = {}
   return out;
 }
 
+// ── Plan gating ──────────────────────────────────────────────────────────────
+// Some controls are impossible to satisfy below a given Cloudflare plan
+// (managed OWASP WAF needs Pro, Logpush needs Enterprise, Page Shield policy
+// enforcement needs Business). On a lower plan these are NOT misconfigurations,
+// so we return NA (excluded from scoring) instead of FAIL — otherwise the score
+// punishes users for limits they can't change, and 100 is unreachable even with
+// a flawless config. A check opts in via `min_plan` in the baseline.
+const PLAN_RANK = { free: 0, pro: 1, business: 2, enterprise: 3 };
+const PLAN_LABEL = { free: 'Free', pro: 'Pro', business: 'Business', enterprise: 'Enterprise' };
+
+function zonePlanRank(zone) {
+  const legacy = zone?.plan?.legacy_id;
+  if (legacy && legacy in PLAN_RANK) return PLAN_RANK[legacy];
+  const name = (zone?.plan?.name || '').toLowerCase();
+  if (name.includes('enterprise')) return PLAN_RANK.enterprise;
+  if (name.includes('business')) return PLAN_RANK.business;
+  if (name.includes('pro')) return PLAN_RANK.pro;
+  if (name.includes('free')) return PLAN_RANK.free;
+  return null; // unknown plan → don't gate, evaluate normally
+}
+
+function zonePlanLabel(zone) {
+  const r = zonePlanRank(zone);
+  if (r == null) return zone?.plan?.name || 'current';
+  return PLAN_LABEL[Object.keys(PLAN_RANK).find(k => PLAN_RANK[k] === r)];
+}
+
+/** Returns an NA finding when the zone's plan can't satisfy the check, else null. */
+export function planGate(check, zone) {
+  if (!check.min_plan) return null;
+  const required = PLAN_RANK[check.min_plan];
+  const current = zonePlanRank(zone);
+  if (required == null || current == null || current >= required) return null;
+  return naFinding(
+    check,
+    `Not available on the ${zonePlanLabel(zone)} plan — requires ${PLAN_LABEL[check.min_plan]} or higher. Not a misconfiguration; excluded from scoring.`
+  );
+}
+
 // ── Dispatcher ─────────────────────────────────────────────────────────────────
 
 async function dispatch(check, api, zoneId, accountId, zone) {
-  let finding;
-  try {
+  let finding = planGate(check, zone);
+  if (!finding) try {
     switch (check.service) {
       case 'zone-setting': finding = await evaluateZoneSetting(check, api, zoneId); break;
       case 'waf':          finding = await evaluateWAF(check, api, zoneId); break;

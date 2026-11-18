@@ -13,6 +13,7 @@ import { evaluateAccess } from './evaluators/access.js';
 import { evaluateWorkers } from './evaluators/workers.js';
 import { evaluatePageShield } from './evaluators/page-shield.js';
 import { evaluateLogpush } from './evaluators/logpush.js';
+import { evaluateOriginPull } from './evaluators/origin-pull.js';
 
 // Baseline is bundled at deploy time — loaded once per isolate lifetime.
 // Override with env.BASELINE_YAML (tests / local experiments) — never cached into _baseline.
@@ -139,6 +140,7 @@ async function dispatch(check, api, zoneId, accountId, zone) {
       case 'workers':      finding = await evaluateWorkers(check, api, zoneId, accountId); break;
       case 'page-shield':  finding = await evaluatePageShield(check, api, zoneId); break;
       case 'logpush':      finding = await evaluateLogpush(check, api, zoneId, accountId); break;
+      case 'origin-pull':  finding = await evaluateOriginPull(check, api, zoneId); break;
       default:
         finding = naFinding(check, `Service "${check.service}" not implemented.`);
     }

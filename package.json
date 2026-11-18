@@ -4,10 +4,25 @@
   "description": "Cloudflare Security Posture Management — full-stack Workers + D1 + KV + R2 + Queues",
   "main": "src/index.js",
   "type": "module",
+  "bin": {
+    "flareguard": "bin/flareguard.js"
+  },
+  "files": [
+    "bin/",
+    "src/",
+    "scripts/",
+    "baseline.yaml",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
     "dev": "npm run sync-baseline && wrangler dev --local",
     "deploy": "npm run sync-baseline && wrangler deploy",
+    "cli": "node bin/flareguard.js",
     "sync-baseline": "node scripts/embed-baseline.js",
+    "prepublishOnly": "npm run sync-baseline",
     "test": "npm run sync-baseline && node --test test/**/*.test.js",
     "db:migrate:local": "wrangler d1 migrations apply flareguard --local",
     "db:migrate:remote": "wrangler d1 migrations apply flareguard",

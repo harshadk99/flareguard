@@ -131,6 +131,11 @@ export class CloudflareAPI {
     return this.#get(`/zones/${zoneId}/dnssec`);
   }
 
+  /** All DNS records for the zone (used to tell a Pages/Workers-only zone from one with a real origin). */
+  listDNSRecords(zoneId) {
+    return this.#get(`/zones/${zoneId}/dns_records?per_page=100`);
+  }
+
   /** @deprecated Legacy WAF packages API — prefer getManagedWAFEntrypoint. */
   getWAFPackages(zoneId) {
     return this.#get(`/zones/${zoneId}/firewall/waf/packages`);

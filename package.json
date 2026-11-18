@@ -1,5 +1,8 @@
 {
-  "name": "flareguard",
+  "name": "@harshadk99/flareguard",
+  "publishConfig": {
+    "access": "public"
+  },
   "version": "2.0.0",
   "description": "Cloudflare Security Posture Management — full-stack Workers + D1 + KV + R2 + Queues",
   "main": "src/index.js",

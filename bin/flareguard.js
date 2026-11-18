@@ -3,8 +3,8 @@
  * FlareGuard CLI — run the Cloudflare control-plane security audit from your
  * terminal or CI, using the same baseline + engine as the Worker.
  *
- *   CLOUDFLARE_API_TOKEN=<token> npx flareguard audit --zone <zone-id>
- *   CLOUDFLARE_API_TOKEN=<token> npx flareguard audit --account <account-id>   # all zones
+ *   CLOUDFLARE_API_TOKEN=<token> npx @harshadk99/flareguard audit --zone <zone-id>
+ *   CLOUDFLARE_API_TOKEN=<token> npx @harshadk99/flareguard audit --account <account-id>   # all zones
  *
  * Privacy: the token and IDs live only in memory for the duration of the run.
  * Nothing is stored or transmitted anywhere except Cloudflare's own API, and the

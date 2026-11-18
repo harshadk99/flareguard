@@ -226,18 +226,18 @@ Audit a zone straight from your terminal or CI — no deploy, nothing stored, sa
 
 ```bash
 export CLOUDFLARE_API_TOKEN=<read-only token>
-npx flareguard audit --zone <zone-id>
+npx @harshadk99/flareguard audit --zone <zone-id>
 
 # every zone in an account (also runs Zero Trust + Worker checks):
-npx flareguard audit --account <account-id>
+npx @harshadk99/flareguard audit --account <account-id>
 ```
 
 Gate a pipeline on the result:
 
 ```bash
-npx flareguard audit --zone <zone-id> --fail-on high   # exit 1 on any open HIGH or CRITICAL
-npx flareguard audit --zone <zone-id> --min-score 80   # exit 1 when the score is below 80
-npx flareguard audit --zone <zone-id> --json           # machine-readable report
+npx @harshadk99/flareguard audit --zone <zone-id> --fail-on high   # exit 1 on any open HIGH or CRITICAL
+npx @harshadk99/flareguard audit --zone <zone-id> --min-score 80   # exit 1 when the score is below 80
+npx @harshadk99/flareguard audit --zone <zone-id> --json           # machine-readable report
 ```
 
 Exit codes: `0` ok (and any gate passed) · `1` gate failed · `2` usage / auth / runtime error. The token lives only in memory for the run; IDs are shown as one-way hashes.

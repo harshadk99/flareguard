@@ -11,8 +11,8 @@
  * report prints to your terminal (IDs are shown only as one-way hashes).
  */
 import { parseArgs } from 'node:util';
-import { readFileSync } from 'node:fs';
-import { fileURLToPath, pathToFileURL } from 'node:url';
+import { readFileSync, realpathSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import { runZoneAudit, runAccountAudit } from '../src/audit/engine.js';
 
@@ -180,8 +180,21 @@ export async function main(argv) {
   return decideExit(report, { failOn, minScore });
 }
 
-// Run only when invoked directly (not when imported by tests).
-if (import.meta.url === pathToFileURL(process.argv[1] || '').href) {
+// Run only when invoked directly — including via an npm `.bin` symlink (npx /
+// global install), where process.argv[1] is a symlink to this file. Resolving
+// both sides with realpath makes the comparison robust; importing in tests
+// (argv[1] is the test runner) still skips execution.
+function invokedDirectly() {
+  const argv1 = process.argv[1];
+  if (!argv1) return false;
+  try {
+    return realpathSync(argv1) === realpathSync(fileURLToPath(import.meta.url));
+  } catch {
+    return false;
+  }
+}
+
+if (invokedDirectly()) {
   main(process.argv.slice(2))
     .then(code => process.exit(code))
     .catch(err => { process.stderr.write(`fatal: ${err?.stack || err}\n`); process.exit(2); });

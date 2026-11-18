@@ -3,6 +3,7 @@
 **An open-source security configuration auditor for the Cloudflare control plane** — zone settings, WAF, DNS, Zero Trust, Workers, and more. Runs as a Worker; paste a read-only API token and get a scored report.
 
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![npm](https://img.shields.io/npm/v/@harshad99/flareguard?color=cb3837&logo=npm)](https://www.npmjs.com/package/@harshad99/flareguard)
 [![Live Demo](https://img.shields.io/badge/demo-live-brightgreen.svg)](https://flareguard.harshad-surfer.workers.dev/)
 [![Cloudflare Workers](https://img.shields.io/badge/Cloudflare-Workers-F38020?logo=cloudflare&logoColor=white)](https://workers.cloudflare.com)
 

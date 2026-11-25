@@ -35,7 +35,12 @@ export function generateDashboard() {
     label{display:block;font-size:.85rem;font-weight:600;margin-bottom:.35rem;color:var(--gray)}
     input[type=text],input[type=password]{width:100%;padding:.55rem .75rem;border:1.5px solid var(--border);border-radius:6px;font-size:.9rem;outline:none;transition:border-color .2s;background:#fff}
     input:focus{border-color:var(--orange)}
-    .hint{font-size:.72rem;color:#aaa;margin-top:.25rem}
+    .hint{font-size:.72rem;color:#6b7280;margin-top:.25rem}
+    .intro{font-size:.82rem;color:#4b5563;margin-bottom:1rem;line-height:1.5}
+    .empty-state{text-align:center;color:#6b7280;padding:2.5rem 1rem}
+    .empty-state .es-icon{font-size:1.6rem;margin-bottom:.5rem;opacity:.55}
+    .empty-state .es-title{font-weight:700;color:#4b5563;font-size:.9rem;margin-bottom:.3rem}
+    .empty-state .es-sub{font-size:.78rem}
     .btn-row{display:flex;gap:.75rem;margin-top:1.25rem;flex-wrap:wrap}
     .btn{padding:.5rem 1.1rem;border:none;border-radius:6px;cursor:pointer;font-size:.875rem;font-weight:600;transition:opacity .2s}
     .btn:disabled{opacity:.45;cursor:not-allowed}
@@ -75,6 +80,7 @@ export function generateDashboard() {
     /* FINDINGS */
     .finding{border-left:4px solid #ddd;margin-bottom:.6rem;background:#fff;border-radius:0 8px 8px 0;box-shadow:0 1px 3px rgba(0,0,0,.05);overflow:hidden;transition:box-shadow .15s}
     .finding:hover{box-shadow:0 2px 8px rgba(0,0,0,.1)}
+    .finding-main:focus-visible{outline:2px solid var(--orange);outline-offset:-2px}
     .finding.PASS{border-left-color:var(--pass)}
     .finding.FAIL{border-left-color:var(--fail)}
     .finding.WARNING{border-left-color:var(--warn)}
@@ -164,6 +170,7 @@ export function generateDashboard() {
     <div class="grid-2">
       <div class="card">
         <div class="card-title">Zone credentials</div>
+        <p class="intro">Audit a single Cloudflare zone against 28 security checks. Your token is used in memory for this request only — never stored, logged, or sent anywhere but Cloudflare's API.</p>
         <div id="scan-alert" class="alert" style="display:none"></div>
         <div id="oauth-connect" style="display:none;margin-bottom:1rem">
           <a class="btn btn-secondary" href="/auth/cf/start" style="display:inline-flex;align-items:center;gap:.4rem;text-decoration:none">⚡ Connect Cloudflare</a>
@@ -171,17 +178,17 @@ export function generateDashboard() {
           <div style="display:flex;align-items:center;gap:.6rem;margin:.9rem 0 .2rem;color:#bbb;font-size:.68rem;letter-spacing:.06em"><span style="flex:1;height:1px;background:var(--border)"></span>OR PASTE A TOKEN<span style="flex:1;height:1px;background:var(--border)"></span></div>
         </div>
         <div class="form-group">
-          <label>Zone ID</label>
-          <input type="text" id="zone-id" placeholder="32-character zone ID" maxlength="32"/>
+          <label for="zone-id">Zone ID</label>
+          <input type="text" id="zone-id" class="id-input" placeholder="32-character zone ID" autocomplete="off" spellcheck="false"/>
         </div>
         <div class="form-group">
-          <label>API Token</label>
-          <input type="password" id="api-token" placeholder="Cloudflare API token"/>
-          <p class="hint">Needs: Zone Read · SSL Read · WAF Read · DNS Read · Logs Read · Page Shield Read</p>
+          <label for="api-token">API Token</label>
+          <input type="password" id="api-token" placeholder="Read-only Cloudflare API token" autocomplete="off"/>
+          <p class="hint">Read-only token. Zone checks need: Zone, Zone Settings (SSL/TLS), DNS, Firewall Services (WAF), Bot Management, Page Shield, Logs. Adding an Account ID also needs: Access, Workers Scripts, Account Logs.</p>
         </div>
         <div class="form-group">
-          <label>Account ID <span style="font-weight:400;color:#bbb">(optional — enables Zero Trust, Workers, Logpush)</span></label>
-          <input type="text" id="account-id" placeholder="32-character account ID" maxlength="32"/>
+          <label for="account-id">Account ID <span style="font-weight:400;color:#6b7280">(optional — enables Zero Trust, Workers, Logpush)</span></label>
+          <input type="text" id="account-id" class="id-input" placeholder="32-character account ID" autocomplete="off" spellcheck="false"/>
         </div>
         <div class="btn-row">
           <button class="btn btn-secondary" id="btn-test">Test Connection</button>
@@ -190,6 +197,13 @@ export function generateDashboard() {
         <div class="spinner" id="scan-spinner"></div>
       </div>
 
+      <div class="card" id="score-empty">
+        <div class="empty-state">
+          <div class="es-icon">🛡️</div>
+          <div class="es-title">Your results will appear here</div>
+          <div class="es-sub">Connect or paste a read-only token, enter a Zone ID, and run the audit to see a severity-weighted score and per-check findings with NIST / CIS mappings. Nothing is stored.</div>
+        </div>
+      </div>
       <div class="card" id="score-card" style="display:none">
         <div class="card-title">Security score</div>
         <div class="score-ring" id="score-ring">—</div>
@@ -230,16 +244,21 @@ export function generateDashboard() {
     <div class="card">
       <div class="card-title">Account-wide scan</div>
       <p style="font-size:.875rem;color:#666;margin-bottom:1.25rem">Scans all zones in your account and returns a ranked risk summary — worst zones first.</p>
-      <p id="account-mode-note" style="font-size:.78rem;color:#888;margin-bottom:1rem"></p>
+      <p id="account-mode-note" style="font-size:.78rem;color:#6b7280;margin-bottom:1rem"></p>
       <div id="account-alert" class="alert" style="display:none"></div>
-      <div class="form-group">
-        <label>Account ID</label>
-        <input type="text" id="acc-account-id" placeholder="32-character account ID" maxlength="32"/>
+      <div id="oauth-connect-account" style="display:none;margin-bottom:1rem">
+        <a class="btn btn-secondary" href="/auth/cf/start" style="display:inline-flex;align-items:center;gap:.4rem;text-decoration:none">⚡ Connect Cloudflare</a>
+        <p class="hint">Grant read-only access through Cloudflare — no token to copy or paste. You pick the account on Cloudflare's screen and can revoke anytime.</p>
+        <div style="display:flex;align-items:center;gap:.6rem;margin:.9rem 0 .2rem;color:#9ca3af;font-size:.68rem;letter-spacing:.06em"><span style="flex:1;height:1px;background:var(--border)"></span>OR PASTE A TOKEN<span style="flex:1;height:1px;background:var(--border)"></span></div>
       </div>
       <div class="form-group">
-        <label>API Token</label>
-        <input type="password" id="acc-api-token" placeholder="Cloudflare API token"/>
-        <p class="hint">Needs: Zone Read (all zones) · Account Read</p>
+        <label for="acc-account-id">Account ID</label>
+        <input type="text" id="acc-account-id" class="id-input" placeholder="32-character account ID" autocomplete="off" spellcheck="false"/>
+      </div>
+      <div class="form-group">
+        <label for="acc-api-token">API Token</label>
+        <input type="password" id="acc-api-token" placeholder="Read-only Cloudflare API token" autocomplete="off"/>
+        <p class="hint">Read-only token. Needs Zone (all zones) + Account, plus the per-zone read scopes listed on the Zone Audit tab.</p>
       </div>
       <div class="btn-row">
         <button class="btn btn-primary" id="btn-account-scan">Scan All Zones →</button>
@@ -255,7 +274,7 @@ export function generateDashboard() {
       <div class="card-title">Audit history</div>
       <p style="font-size:.875rem;color:#666;margin-bottom:1rem">Score trend and persistent failures for a zone. Requires D1 persistent storage enabled on the worker.</p>
       <div class="form-group" style="display:flex;gap:.75rem;align-items:flex-end">
-        <div style="flex:1"><label>Zone ID</label><input type="text" id="hist-zone-id" placeholder="32-character zone ID" maxlength="32"/></div>
+        <div style="flex:1"><label for="hist-zone-id">Zone ID</label><input type="text" id="hist-zone-id" class="id-input" placeholder="32-character zone ID" autocomplete="off" spellcheck="false"/></div>
         <button class="btn btn-primary" id="btn-history" style="margin-bottom:0">Load</button>
       </div>
       <div id="history-content" style="margin-top:1rem"><p style="color:#aaa;font-size:.875rem">Enter a Zone ID and click Load.</p></div>
@@ -268,7 +287,7 @@ export function generateDashboard() {
       <div class="card-title">Drift detection</div>
       <p style="font-size:.875rem;color:#666;margin-bottom:1rem">Compare the two most recent audits for a zone. Highlights every check that changed status. Requires D1 storage enabled.</p>
       <div class="form-group" style="display:flex;gap:.75rem;align-items:flex-end">
-        <div style="flex:1"><label>Zone ID</label><input type="text" id="drift-zone-id" placeholder="32-character zone ID" maxlength="32"/></div>
+        <div style="flex:1"><label for="drift-zone-id">Zone ID</label><input type="text" id="drift-zone-id" class="id-input" placeholder="32-character zone ID" autocomplete="off" spellcheck="false"/></div>
         <button class="btn btn-primary" id="btn-drift" style="margin-bottom:0">Check Drift</button>
       </div>
       <div id="drift-content" style="margin-top:1rem"><p style="color:#aaa;font-size:.875rem">Enter a Zone ID and click Check Drift.</p></div>
@@ -286,6 +305,41 @@ export function generateDashboard() {
 const $ = id => document.getElementById(id);
 const scoreColor = s => s >= 90 ? 'var(--pass)' : s >= 70 ? 'var(--warn)' : 'var(--fail)';
 let _features = { audit_history: false, drift_detection: false, async_scanning: false };
+let _oauthExpiresAt = null; // epoch ms when an OAuth-loaded token expires (null if pasted)
+
+// Auto-escaping helper (Option A). esc() HTML-escapes any value; values wrapped in
+// safe() (or produced by the html tag) pass through untouched. Closes the innerHTML
+// XSS class for anything interpolated from the live Cloudflare API (zone names, errors).
+class SafeHTML extends String {}
+const safe = s => new SafeHTML(s == null ? '' : s);
+function esc(v) {
+  if (v instanceof SafeHTML) return v.toString();
+  return String(v == null ? '' : v).replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
+}
+function html(strings, ...values) {
+  let out = strings[0];
+  for (let i = 0; i < values.length; i++) {
+    const v = values[i];
+    out += (Array.isArray(v) ? v.map(esc).join('') : esc(v)) + strings[i + 1];
+  }
+  return new SafeHTML(out);
+}
+// Only permit http(s) links from API data (block javascript:, data:, etc.)
+const safeUrl = u => {
+  const low = String(u == null ? '' : u).slice(0, 8).toLowerCase();
+  return (low.startsWith('https://') || low.startsWith('http://')) ? String(u) : '';
+};
+// Strip whitespace from ID fields as the user types/pastes, so a stray leading/trailing
+// space can't corrupt the value (the server also trims defensively).
+function wireIdInputs() {
+  document.querySelectorAll('.id-input').forEach(el => {
+    el.addEventListener('input', () => {
+      const cleaned = el.value.replace(/\\s+/g, '');
+      if (cleaned !== el.value) el.value = cleaned;
+    });
+  });
+}
+wireIdInputs();
 
 function showAlert(id, msg, type) {
   const el = $(id); el.className = 'alert alert-' + type;
@@ -308,6 +362,7 @@ function hideAlert(id) { $(id).style.display = 'none'; }
   $('api-token').value = token;
   if ($('acc-api-token')) $('acc-api-token').value = token;
   const exp = Number(p.get('cf_expires'));
+  _oauthExpiresAt = exp ? Date.now() + exp * 1000 : null;
   const mins = exp ? Math.round(exp / 60) : null;
   showAlert('scan-alert', '✓ Connected to Cloudflare — read-only token loaded for this session'
     + (mins ? ' (expires in ~' + mins + ' min)' : '') + '. Enter a Zone ID and run the audit.', 'success');
@@ -316,7 +371,9 @@ function hideAlert(id) { $(id).style.display = 'none'; }
 // Gate History/Drift tabs on /api/status — don't advertise features that aren't bound
 fetch('/api/status').then(r => r.json()).then(data => {
   _features = data.features || _features;
-  if (data.oauth_enabled) { const oc = $('oauth-connect'); if (oc) oc.style.display = 'block'; }
+  if (data.oauth_enabled) {
+    ['oauth-connect', 'oauth-connect-account'].forEach(id => { const oc = $(id); if (oc) oc.style.display = 'block'; });
+  }
   document.querySelectorAll('[data-requires]').forEach(tab => {
     const key = tab.dataset.requires;
     if (_features[key]) tab.hidden = false;
@@ -365,6 +422,10 @@ let _activeFilters = { status: 'ALL', cis: false, category: 'ALL' };
 
 $('btn-audit').addEventListener('click', async () => {
   hideAlert('scan-alert');
+  if (_oauthExpiresAt && Date.now() > _oauthExpiresAt) {
+    showAlert('scan-alert', '⚠ Your Cloudflare connection has expired. Click "⚡ Connect Cloudflare" above to reconnect, or paste a token.', 'error');
+    return;
+  }
   $('scan-spinner').style.display = 'block';
   $('score-card').style.display = 'none';
   $('findings-card').style.display = 'none';
@@ -378,6 +439,7 @@ $('btn-audit').addEventListener('click', async () => {
     _report = data;
     _activeFilters = { status:'ALL', cis:false, category:'ALL' };
     renderReport(data);
+    $('score-empty').style.display = 'none';
     $('score-card').style.display = 'block';
     $('findings-card').style.display = 'block';
   } catch(e) {
@@ -466,7 +528,7 @@ function applyFilters() {
 
 function renderFindings(findings) {
   if (!findings.length) {
-    $('findings-list').innerHTML = '<p style="color:#aaa;padding:.5rem 0">No findings match the current filters.</p>';
+    $('findings-list').innerHTML = '<p style="color:#6b7280;padding:.5rem 0">No findings match the current filters.</p>';
     return;
   }
   $('findings-list').innerHTML = findings.map(f => {
@@ -475,42 +537,43 @@ function renderFindings(findings) {
     const rc   = f.resolved_controls;
     const nistCards = (rc?.nist ?? []).map(c => \`
       <div class="control-card nist">
-        <div class="control-id">NIST \${c.id}</div>
-        <div class="control-title">\${c.title ?? c.id}</div>
-        \${c.family ? \`<div class="control-family">\${c.family} · NIST SP 800-53 Rev 5</div>\` : ''}
-        \${c.url ? \`<a class="control-link" href="\${c.url}" target="_blank" rel="noopener">Reference →</a>\` : ''}
+        <div class="control-id">NIST \${esc(c.id)}</div>
+        <div class="control-title">\${esc(c.title ?? c.id)}</div>
+        \${c.family ? \`<div class="control-family">\${esc(c.family)} · NIST SP 800-53 Rev 5</div>\` : ''}
+        \${safeUrl(c.url) ? \`<a class="control-link" href="\${esc(safeUrl(c.url))}" target="_blank" rel="noopener">Reference →</a>\` : ''}
       </div>
     \`).join('');
     const cisCards = (rc?.cis ?? []).map(c => \`
       <div class="control-card cis">
-        <div class="control-id">CIS \${c.id}</div>
-        <div class="control-title">\${c.title ?? c.id}</div>
-        \${c.group ? \`<div class="control-family">\${c.group} · CIS Controls v8</div>\` : ''}
-        \${c.implementation_groups?.length ? \`<div class="control-igs">\${c.implementation_groups.map(g=>\`<span class="ig">\${g}</span>\`).join('')}</div>\` : ''}
+        <div class="control-id">CIS \${esc(c.id)}</div>
+        <div class="control-title">\${esc(c.title ?? c.id)}</div>
+        \${c.group ? \`<div class="control-family">\${esc(c.group)} · CIS Controls v8</div>\` : ''}
+        \${c.implementation_groups?.length ? \`<div class="control-igs">\${c.implementation_groups.map(g=>\`<span class="ig">\${esc(g)}</span>\`).join('')}</div>\` : ''}
       </div>
     \`).join('');
     const hasDetail = f.remediation || f.dashboard_hint || nistCards || cisCards;
     return \`
-      <div class="finding \${f.status}" onclick="toggleFinding(this)">
-        <div class="finding-main">
+      <div class="finding \${esc(f.status)}">
+        <div class="finding-main"\${hasDetail ? ' role="button" tabindex="0" aria-expanded="false"' : ''}>
           <div class="finding-badges">
-            <span class="badge badge-\${f.severity}">\${f.severity}</span>
-            <span class="badge badge-\${f.status}">\${f.status}</span>
+            <span class="badge badge-\${esc(f.severity)}">\${esc(f.severity)}</span>
+            <span class="badge badge-\${esc(f.status)}">\${esc(f.status)}</span>
           </div>
           <div class="finding-body">
-            <div class="finding-title">\${f.id}: \${f.name}</div>
-            \${f.message ? \`<div class="finding-msg">\${f.message}</div>\` : ''}
+            <div class="finding-title">\${esc(f.id)}: \${esc(f.name)}</div>
+            \${f.message ? \`<div class="finding-msg">\${esc(f.message)}</div>\` : ''}
+            \${f.status === 'ERROR' ? '<div class="finding-msg" style="color:#64748b">Could not evaluate this check — your token may be missing the read scope it needs, or the Cloudflare API was unreachable.</div>' : ''}
             <div class="finding-tags">
-              \${nist.map(n=>\`<span class="tag">NIST \${n}</span>\`).join('')}
-              \${cis.map(c=>\`<span class="tag tag-cis">CIS \${c}</span>\`).join('')}
+              \${nist.map(n=>\`<span class="tag">NIST \${esc(n)}</span>\`).join('')}
+              \${cis.map(c=>\`<span class="tag tag-cis">CIS \${esc(c)}</span>\`).join('')}
             </div>
           </div>
-          \${hasDetail ? '<span class="finding-expand-icon">▼</span>' : ''}
+          \${hasDetail ? '<span class="finding-expand-icon" aria-hidden="true">▼</span>' : ''}
         </div>
         \${hasDetail ? \`
         <div class="finding-detail">
-          \${f.remediation ? \`<div class="detail-remediation">⚠ \${f.remediation}</div>\` : ''}
-          \${f.dashboard_hint ? \`<div style="font-size:.78rem;color:#666;margin:.4rem 0 .6rem">↗ \${f.dashboard_hint}</div>\` : ''}
+          \${f.remediation ? \`<div class="detail-remediation">⚠ \${esc(f.remediation)}</div>\` : ''}
+          \${f.dashboard_hint ? \`<div style="font-size:.78rem;color:#555;margin:.4rem 0 .6rem">↗ \${esc(f.dashboard_hint)}</div>\` : ''}
           \${(nistCards || cisCards) ? \`
             <div class="controls-section-title">Framework controls</div>
             <div class="controls-grid">\${nistCards}\${cisCards}</div>
@@ -521,9 +584,24 @@ function renderFindings(findings) {
   }).join('');
 }
 
-function toggleFinding(el) {
-  el.classList.toggle('expanded');
+// Expand/collapse a finding (click or keyboard). Delegated so it survives re-render.
+function toggleFinding(mainEl) {
+  const finding = mainEl.closest('.finding');
+  if (!finding) return;
+  const expanded = finding.classList.toggle('expanded');
+  mainEl.setAttribute('aria-expanded', expanded ? 'true' : 'false');
 }
+$('findings-list').addEventListener('click', e => {
+  const main = e.target.closest('.finding-main[role="button"]');
+  if (main) toggleFinding(main);
+});
+$('findings-list').addEventListener('keydown', e => {
+  if (e.key !== 'Enter' && e.key !== ' ') return;
+  const main = e.target.closest('.finding-main[role="button"]');
+  if (!main) return;
+  e.preventDefault();
+  toggleFinding(main);
+});
 
 // Download
 $('btn-download').addEventListener('click', () => {
@@ -572,10 +650,10 @@ function renderAccountResults(zones) {
     <table>
       <thead><tr><th>Zone</th><th>Score</th><th>Pass</th><th>Fail</th><th>Warn</th></tr></thead>
       <tbody>\${sorted.map(z => z.error ? \`
-        <tr><td colspan="5" style="color:var(--fail)">\${z.zone_name ?? z.zone_id}: \${z.error}</td></tr>
+        <tr><td colspan="5" style="color:var(--fail)">\${esc(z.zone_name ?? z.zone_id)}: \${esc(z.error)}</td></tr>
       \` : \`
         <tr>
-          <td style="font-weight:600">\${z.zone_name ?? z.zone_id}</td>
+          <td style="font-weight:600">\${esc(z.zone_name ?? z.zone_id)}</td>
           <td><span class="score-pill" style="background:\${scoreColor(z.summary.score)}">\${z.summary.score}%</span></td>
           <td class="c-pass">\${z.summary.passed}</td>
           <td class="c-fail">\${z.summary.failed}</td>
@@ -594,7 +672,7 @@ $('btn-history').addEventListener('click', async () => {
   try {
     const res = await fetch('/api/history/' + zoneId);
     const data = await res.json();
-    if (data.error) { $('history-content').innerHTML = '<p style="color:var(--fail)">' + data.error + '</p>'; return; }
+    if (data.error) { $('history-content').innerHTML = '<p style="color:var(--fail)">' + esc(data.error) + '</p>'; return; }
     if (!data.history?.length) { $('history-content').innerHTML = '<p style="color:#aaa">No audit history found. Run a zone audit first — history requires D1 storage enabled.</p>'; return; }
     $('history-content').innerHTML = \`
       <table>
@@ -604,12 +682,12 @@ $('btn-history').addEventListener('click', async () => {
             <td>\${new Date(h.created_at).toLocaleString()}</td>
             <td><span class="score-pill" style="background:\${scoreColor(h.score)}">\${h.score}%</span></td>
             <td class="c-pass">\${h.passed}</td><td class="c-fail">\${h.failed}</td><td class="c-warn">\${h.warnings}</td>
-            <td style="color:#aaa">\${h.scan_type}</td>
+            <td style="color:#6b7280">\${esc(h.scan_type)}</td>
           </tr>
         \`).join('')}</tbody>
       </table>
     \`;
-  } catch(e) { $('history-content').innerHTML = '<p style="color:var(--fail)">' + e.message + '</p>'; }
+  } catch(e) { $('history-content').innerHTML = '<p style="color:var(--fail)">' + esc(e.message) + '</p>'; }
 });
 
 // ── Drift ──────────────────────────────────────────────────────────────────────
@@ -620,9 +698,9 @@ $('btn-drift').addEventListener('click', async () => {
   try {
     const res = await fetch('/api/drift/' + zoneId);
     const data = await res.json();
-    if (data.error) { $('drift-content').innerHTML = '<p style="color:var(--fail)">' + data.error + '</p>'; return; }
+    if (data.error) { $('drift-content').innerHTML = '<p style="color:var(--fail)">' + esc(data.error) + '</p>'; return; }
     if (!data.changes?.length) {
-      $('drift-content').innerHTML = \`<div class="alert alert-success">✓ No drift — configuration is unchanged between the two most recent audits. \${data.message ?? ''}</div>\`;
+      $('drift-content').innerHTML = \`<div class="alert alert-success">✓ No drift — configuration is unchanged between the two most recent audits. \${esc(data.message ?? '')}</div>\`;
       return;
     }
     const statusColor = {PASS:'var(--pass)',FAIL:'var(--fail)',WARNING:'var(--warn)',NA:'var(--na)',ERROR:'#64748b'};
@@ -632,17 +710,17 @@ $('btn-drift').addEventListener('click', async () => {
       <div class="alert alert-info">\${data.changes.length} change(s) detected between the two most recent audits.</div>
       \${data.changes.map(c => \`
         <div class="drift-row" style="border-left:3px solid \${statusColor[c.to] ?? '#ddd'}">
-          <strong style="font-size:.8rem;min-width:110px">\${c.check_id}</strong>
-          <span style="flex:1;font-size:.82rem;color:#555">\${c.check_name}</span>
+          <strong style="font-size:.8rem;min-width:110px">\${esc(c.check_id)}</strong>
+          <span style="flex:1;font-size:.82rem;color:#555">\${esc(c.check_name)}</span>
           <span class="drift-arrow">
-            <span style="color:\${statusColor[c.from]}">\${c.from}</span>
+            <span style="color:\${statusColor[c.from] ?? '#64748b'}">\${esc(c.from)}</span>
             →
-            <span style="color:\${statusColor[c.to]};font-weight:700">\${c.to}</span>
+            <span style="color:\${statusColor[c.to] ?? '#64748b'};font-weight:700">\${esc(c.to)}</span>
           </span>
         </div>
       \`).join('')}
     \`;
-  } catch(e) { $('drift-content').innerHTML = '<p style="color:var(--fail)">' + e.message + '</p>'; }
+  } catch(e) { $('drift-content').innerHTML = '<p style="color:var(--fail)">' + esc(e.message) + '</p>'; }
 });
 </script>
 </body>

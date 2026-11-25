@@ -19,15 +19,19 @@ export default {
     const url = new URL(request.url);
     const { pathname, method } = { pathname: url.pathname, method: request.method };
 
-    // CORS preflight
+    // CORS preflight — same-origin only. The UI is served by this same Worker, so
+    // there is no legitimate cross-origin browser caller; we therefore do NOT send
+    // a wildcard Access-Control-Allow-Origin (which would let any site's JavaScript
+    // drive this audit endpoint). Same-origin requests need no CORS headers at all.
     if (method === 'OPTIONS') {
-      return new Response(null, {
-        headers: {
-          'Access-Control-Allow-Origin': '*',
-          'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-          'Access-Control-Allow-Headers': 'Content-Type',
-        },
-      });
+      const origin = request.headers.get('Origin');
+      const headers = { Vary: 'Origin' };
+      if (origin && origin === url.origin) {
+        headers['Access-Control-Allow-Origin'] = origin;
+        headers['Access-Control-Allow-Methods'] = 'GET, POST, OPTIONS';
+        headers['Access-Control-Allow-Headers'] = 'Content-Type';
+      }
+      return new Response(null, { status: 204, headers });
     }
 
     // ── API Routes ──────────────────────────────────────────────────────────

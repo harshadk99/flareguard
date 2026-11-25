@@ -35,21 +35,23 @@ export const CF_OAUTH_ENDPOINTS = {
  */
 export const FLAREGUARD_SCOPES = {
   required: [
-    'zone.read',                 // Zone Read — list/resolve the zone
-    'zone-settings.read',        // Zone Settings Read — SSL/TLS/HSTS/security level/…
-    'dns.read',                  // DNS Read — DNSSEC
-    'ssl-and-certificates.read', // SSL and Certificates Read — CT monitoring, certs
-    'firewall-services.read',    // Firewall Services Read — WAF, firewall, rate limiting
-    'bot-management.read',       // Bot Management Read
-    'page-shield.read',          // Page Shield Read
-    'logs.read',                 // Logs Read — zone Logpush
+    'zone.read',              // Zone Read — list/resolve the zone
+    'zone-settings.read',     // Zone Settings Read — SSL/TLS/HSTS/security level/certs
+    'dns.read',               // DNS Read — DNSSEC
+    'firewall-services.read', // Firewall Services Read — WAF, firewall, rate limiting
+    'bot-management.read',    // Bot Management Read
+    'page-shield.read',       // Page Shield Read
+    // NOTE: zone `logs.read` (zone Logpush check) is intentionally NOT requested —
+    // Cloudflare's dashboard scope picker doesn't reliably expose it for self-managed
+    // clients, so requesting it breaks the whole authorize call. The one zone-Logpush
+    // check degrades gracefully under OAuth; a pasted token with Logs Read still covers it.
   ],
   optional: [
-    'account-settings.read',     // Account Settings Read
-    'access.read',               // Access: Apps and Policies Read — Zero Trust
-    'workers-scripts.read',      // Workers Scripts Read — zombie / secret-env checks
-    'workers-routes.read',       // Workers Routes Read
-    'account-logs.read',         // Logs Read (account) — account Logpush
+    'access.read',                   // Access: Apps and Policies Read — Zero Trust
+    'workers-scripts.metadata_read', // Workers "Metadata Read" — list scripts + deployments
+    'workers-scripts.content_read',  // Workers "Content Read" — script settings/bindings (secret-env check)
+    'workers-routes.read',           // Workers Routes Read — zone route → script mapping
+    'account-logs.read',             // Logs Read (account) — account Logpush
   ],
 };
 

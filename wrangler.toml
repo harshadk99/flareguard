@@ -21,10 +21,13 @@ CACHE_TTL_SECONDS = "300"
 #   • Flow / auth method : Authorization Code + PKCE  (token_endpoint_auth_method: "none")
 #   • Redirect URIs      : https://<your-worker-host>/auth/cf/callback
 #                          http://localhost:8787/auth/cf/callback   (local dev)
-#   • Required scopes    : zone.read zone-settings.read dns.read ssl-and-certificates.read
-#                          firewall-services.read bot-management.read page-shield.read logs.read
-#   • Optional scopes    : account-settings.read access.read workers-scripts.read
+#   • Required scopes    : zone.read zone-settings.read dns.read firewall-services.read
+#                          bot-management.read page-shield.read
+#     (zone `logs.read` is NOT requested — the dashboard picker doesn't expose it for
+#      self-managed clients, so including it breaks the authorize call.)
+#   • Optional scopes    : access.read workers-scripts.metadata_read workers-scripts.content_read
 #                          workers-routes.read account-logs.read
+#     (in the dashboard scope picker, the "Workers" row's Content Read + Metadata Read)
 # The client id is public (PKCE needs no secret), so it is safe as a plain var.
 # CF_OAUTH_CLIENT_ID = "your-oauth-client-id"
 

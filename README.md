@@ -1,6 +1,6 @@
 # FlareGuard
 
-**An open-source security configuration auditor for the Cloudflare control plane** — zone settings, WAF, DNS, Zero Trust, Workers, and more. Runs as a Worker; paste a read-only API token and get a scored report.
+**An open-source security configuration auditor for the Cloudflare control plane** — zone settings, WAF, DNS, Zero Trust, Workers, and more. Runs as a Worker; connect through Cloudflare's OAuth consent screen or paste a read-only API token, and get a scored report.
 
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![npm](https://img.shields.io/npm/v/@harshad99/flareguard?color=cb3837&logo=npm)](https://www.npmjs.com/package/@harshad99/flareguard)
@@ -381,18 +381,6 @@ Adding a check for a zone setting requires only YAML — no code:
 ```
 
 For checks that require custom API calls, add an evaluator in `src/audit/evaluators/` and register it in `src/audit/engine.js`. The evaluator receives the check definition and a fully authenticated API client.
-
----
-
-## Roadmap
-
-- [ ] Scheduled scans via Cron Triggers — continuous posture monitoring
-- [ ] Slack / email alerts on drift — operational security integration
-- [ ] AI Gateway security checks mapped to NIST AI RMF
-- [ ] Workers AI posture checks mapped to OWASP LLM Top 10
-- [ ] AI Bill of Materials (AIBOM) — inventory of AI models and Gateway routes per account
-- [ ] Multi-account dashboard
-- [ ] Compliance report export — PDF and hosted shareable URL
 
 ---
 

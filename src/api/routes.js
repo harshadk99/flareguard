@@ -13,6 +13,7 @@ import { ReportStorage } from '../storage/index.js';
 import { Cache } from '../cache/index.js';
 import { enqueueZoneScan } from '../queue/index.js';
 import { hashId } from '../utils/privacy.js';
+import { oauthEnabled } from '../auth/routes.js';
 
 const JSON_HEADERS = { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' };
 const MAX_BODY_BYTES = 4 * 1024; // 4 KB — credentials + IDs never need more
@@ -22,7 +23,9 @@ const err  = (msg, status = 400) => json({ error: msg }, status);
 // ── Input validation ───────────────────────────────────────────────────────────
 const ZONE_ID_RE    = /^[a-f0-9]{32}$/i;
 const ACCOUNT_ID_RE = /^[a-f0-9]{32}$/i;
-const TOKEN_RE      = /^[a-zA-Z0-9_\-]{20,}$/;
+// Accepts classic API tokens, OAuth access tokens, and JWT-style tokens.
+// This is only an early UX guard — real validity is proven by the live API call.
+const TOKEN_RE      = /^[a-zA-Z0-9._~:+/=\-]{20,8192}$/;
 const AUDIT_ID_RE   = /^[a-zA-Z0-9_\-]{1,64}$/;   // D1 row IDs are short opaque strings
 const REPORT_KEY_RE = /^[a-zA-Z0-9_\-/]{1,256}$/; // R2 key: alphanumeric + safe chars
 
@@ -228,12 +231,14 @@ export async function handleReportDownload(key, env) {
 export function handleStatus(env) {
   return json({
     mode: hasDB(env) ? 'storage' : 'stateless',
+    oauth_enabled: oauthEnabled(env),
     features: {
       audit_history:    hasDB(env),
       drift_detection:  hasDB(env),
       report_storage:   !!env.REPORTS,
       api_cache:        !!env.CACHE,
       async_scanning:   !!env.SCAN_QUEUE,
+      oauth_login:      oauthEnabled(env),
     },
     privacy: {
       credentials_stored: false,

@@ -12,6 +12,22 @@ compatibility_flags = ["nodejs_compat"]
 ENVIRONMENT = "production"
 CACHE_TTL_SECONDS = "300"
 
+# ── OPTIONAL: "Connect with Cloudflare" (OAuth login) ──────────────────────────
+# Lets users grant read-only access via Cloudflare's consent screen instead of
+# pasting an API token. When CF_OAUTH_CLIENT_ID is unset, the feature is simply
+# hidden and the manual-token flow is unaffected.
+#
+# Register a PUBLIC OAuth client (dashboard → Manage Account → OAuth clients):
+#   • Flow / auth method : Authorization Code + PKCE  (token_endpoint_auth_method: "none")
+#   • Redirect URIs      : https://<your-worker-host>/auth/cf/callback
+#                          http://localhost:8787/auth/cf/callback   (local dev)
+#   • Required scopes    : zone.read zone-settings.read dns.read ssl-and-certificates.read
+#                          firewall-services.read bot-management.read page-shield.read logs.read
+#   • Optional scopes    : account-settings.read access.read workers-scripts.read
+#                          workers-routes.read account-logs.read
+# The client id is public (PKCE needs no secret), so it is safe as a plain var.
+# CF_OAUTH_CLIENT_ID = "your-oauth-client-id"
+
 # ── OPTIONAL: Persistent Storage ───────────────────────────────────────────────
 # Uncomment the sections below to enable opt-in features.
 # Without these, the worker runs fully stateless — no credentials or IDs are

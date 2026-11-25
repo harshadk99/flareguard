@@ -269,6 +269,31 @@ npm run db:migrate:remote
 
 Uncomment the binding sections in `wrangler.toml` and redeploy.
 
+### Enable "Connect with Cloudflare" (OAuth — optional)
+
+Instead of pasting an API token, users can grant FlareGuard **read-only** access
+through Cloudflare's own consent screen — the same OAuth model Wrangler uses. No
+token is copied or stored; the user picks the account on Cloudflare's screen and
+can revoke access anytime from their dashboard. Leave it unconfigured and the
+feature is simply hidden; the manual-token flow is unaffected.
+
+1. In the Cloudflare dashboard, go to **Manage Account → OAuth clients** and
+   create a **public** client:
+   - **Auth method:** Authorization Code + PKCE (`token_endpoint_auth_method: none` — no client secret)
+   - **Redirect URIs:** `https://<your-worker-host>/auth/cf/callback` and, for
+     local dev, `http://localhost:8787/auth/cf/callback`
+   - **Required scopes:** `zone.read zone-settings.read dns.read ssl-and-certificates.read firewall-services.read bot-management.read page-shield.read logs.read`
+   - **Optional scopes** (unlock Zero Trust / Workers / account Logpush):
+     `account-settings.read access.read workers-scripts.read workers-routes.read account-logs.read`
+2. Set the client id (public — not a secret) in `wrangler.toml` under `[vars]`:
+   ```toml
+   CF_OAUTH_CLIENT_ID = "your-oauth-client-id"
+   ```
+3. Redeploy. A **⚡ Connect Cloudflare** button appears on `/audit`.
+
+The access token is handed to the browser and used per request exactly like a
+pasted token — the Worker never stores or logs it.
+
 ---
 
 ## UI

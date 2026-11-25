@@ -38,6 +38,12 @@ async function parseBodyWithSizeGuard(request) {
 }
 
 function validateInputs(body) {
+  // Normalize pasted credentials: strip surrounding whitespace/newlines that
+  // commonly ride along on copy-paste, so a trailing space doesn't fail the
+  // hex/token checks. Mutates body so downstream audit + hashing use the clean value.
+  for (const k of ['zone_id', 'account_id', 'api_token']) {
+    if (typeof body[k] === 'string') body[k] = body[k].trim();
+  }
   const errors = [];
   if (body.zone_id    && !ZONE_ID_RE.test(body.zone_id))    errors.push('zone_id must be a 32-character hex string.');
   if (body.account_id && !ACCOUNT_ID_RE.test(body.account_id)) errors.push('account_id must be a 32-character hex string.');

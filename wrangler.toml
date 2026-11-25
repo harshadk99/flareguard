@@ -11,13 +11,19 @@ compatibility_flags = ["nodejs_compat"]
 [vars]
 ENVIRONMENT = "production"
 CACHE_TTL_SECONDS = "300"
+# "Connect with Cloudflare" OAuth client id (public — PKCE needs no secret).
+# This id belongs to the canonical deployment (flareguard.harshad-surfer.workers.dev);
+# its redirect URI is tied to that host. If you deploy YOUR OWN instance, register
+# your own OAuth client (see below) and replace this id — or delete this line to
+# hide the Connect button and keep only the paste-a-token flow.
+CF_OAUTH_CLIENT_ID = "094cd9552c60aa05faa2fd4859cf40c7"
 
-# ── OPTIONAL: "Connect with Cloudflare" (OAuth login) ──────────────────────────
-# Lets users grant read-only access via Cloudflare's consent screen instead of
-# pasting an API token. When CF_OAUTH_CLIENT_ID is unset, the feature is simply
-# hidden and the manual-token flow is unaffected.
+# ── "Connect with Cloudflare" (OAuth login) — registering your own client ──────
+# Enabled above via CF_OAUTH_CLIENT_ID. When that var is unset, the feature is
+# simply hidden and the manual-token flow is unaffected.
 #
-# Register a PUBLIC OAuth client (dashboard → Manage Account → OAuth clients):
+# To run Connect on your OWN deployment, register a PUBLIC OAuth client
+# (dashboard → Manage Account → OAuth clients) and set CF_OAUTH_CLIENT_ID to it:
 #   • Flow / auth method : Authorization Code + PKCE  (token_endpoint_auth_method: "none")
 #   • Redirect URIs      : https://<your-worker-host>/auth/cf/callback
 #                          http://localhost:8787/auth/cf/callback   (local dev)
@@ -28,8 +34,8 @@ CACHE_TTL_SECONDS = "300"
 #   • Optional scopes    : access.read workers-scripts.metadata_read workers-scripts.content_read
 #                          workers-routes.read account-logs.read
 #     (in the dashboard scope picker, the "Workers" row's Content Read + Metadata Read)
-# The client id is public (PKCE needs no secret), so it is safe as a plain var.
-# CF_OAUTH_CLIENT_ID = "your-oauth-client-id"
+# The client id is public (PKCE needs no secret), so it is safe as a plain var —
+# set it in the [vars] block above (replacing the canonical one).
 
 # ── OPTIONAL: Persistent Storage ───────────────────────────────────────────────
 # Uncomment the sections below to enable opt-in features.

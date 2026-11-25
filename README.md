@@ -282,9 +282,11 @@ feature is simply hidden; the manual-token flow is unaffected.
    - **Auth method:** Authorization Code + PKCE (`token_endpoint_auth_method: none` — no client secret)
    - **Redirect URIs:** `https://<your-worker-host>/auth/cf/callback` and, for
      local dev, `http://localhost:8787/auth/cf/callback`
-   - **Required scopes:** `zone.read zone-settings.read dns.read ssl-and-certificates.read firewall-services.read bot-management.read page-shield.read logs.read`
+   - **Required scopes:** `zone.read zone-settings.read dns.read firewall-services.read bot-management.read page-shield.read`
+     — zone `logs.read` is deliberately omitted (the dashboard picker doesn't expose it for self-managed clients; the one zone-Logpush check degrades gracefully under OAuth).
    - **Optional scopes** (unlock Zero Trust / Workers / account Logpush):
-     `account-settings.read access.read workers-scripts.read workers-routes.read account-logs.read`
+     `access.read workers-scripts.metadata_read workers-scripts.content_read workers-routes.read account-logs.read`
+     — in the dashboard scope picker these are the **Workers** row's **Content Read** + **Metadata Read** (there is no single "Workers Scripts Read" toggle).
 2. Set the client id (public — not a secret) in `wrangler.toml` under `[vars]`:
    ```toml
    CF_OAUTH_CLIENT_ID = "your-oauth-client-id"

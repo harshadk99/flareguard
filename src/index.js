@@ -9,6 +9,7 @@ import {
   handleStatus,
 } from './api/routes.js';
 import { processQueue } from './queue/index.js';
+import { handleOAuthStart, handleOAuthCallback } from './auth/routes.js';
 import { generateDashboard } from './ui/dashboard.js';
 import { generateLanding } from './ui/landing.js';
 
@@ -35,6 +36,10 @@ export default {
     if (pathname === '/api/test-connection' && method === 'POST') return handleTestConnection(request, env);
 
     if (pathname === '/api/status' && method === 'GET') return handleStatus(env);
+
+    // ── OAuth: "Connect with Cloudflare" ──────────────────────────────────────
+    if (pathname === '/auth/cf/start'    && method === 'GET') return handleOAuthStart(request, env);
+    if (pathname === '/auth/cf/callback' && method === 'GET') return handleOAuthCallback(request, env);
 
     // GET /api/history/:zoneId
     const historyMatch = pathname.match(/^\/api\/history\/([a-f0-9]{32})$/i);

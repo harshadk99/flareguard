@@ -29,6 +29,9 @@ src/
   db/index.js               — D1 helpers (no-op when DB not bound)
   storage/index.js          — R2 report storage (no-op when REPORTS not bound)
   queue/index.js            — Queue producer + consumer
+  auth/
+    cloudflare-oauth.js     — "Connect with Cloudflare" OAuth logic (Auth Code + PKCE, scopes)
+    routes.js               — /auth/cf/start + /auth/cf/callback handlers (stateless, cookie-carried PKCE)
   ui/dashboard.js           — Single-file SPA served by the Worker
   utils/
     cf-api.js               — Cloudflare API client
@@ -51,6 +54,8 @@ baseline.yaml               — Security check definitions (YAML)
 | GET  | `/api/audit/:auditId/findings` | Detailed findings for one audit (requires D1) |
 | GET  | `/api/drift/:zoneId` | Drift between two most recent audits (requires D1) |
 | GET  | `/api/report/:key` | Download stored JSON report (requires R2) |
+| GET  | `/auth/cf/start` | Begin "Connect with Cloudflare" OAuth (redirect to consent) — only when `CF_OAUTH_CLIENT_ID` is set |
+| GET  | `/auth/cf/callback` | OAuth callback: exchange code (PKCE) and hand token to the SPA via URL fragment |
 
 ## Development & Test Commands
 - Install: `npm install`

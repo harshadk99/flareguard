@@ -165,6 +165,11 @@ export function generateDashboard() {
       <div class="card">
         <div class="card-title">Zone credentials</div>
         <div id="scan-alert" class="alert" style="display:none"></div>
+        <div id="oauth-connect" style="display:none;margin-bottom:1rem">
+          <a class="btn btn-secondary" href="/auth/cf/start" style="display:inline-flex;align-items:center;gap:.4rem;text-decoration:none">⚡ Connect Cloudflare</a>
+          <p class="hint">Grant read-only access through Cloudflare — no token to copy or paste. You choose the account on Cloudflare's screen, and can revoke access anytime from your dashboard.</p>
+          <div style="display:flex;align-items:center;gap:.6rem;margin:.9rem 0 .2rem;color:#bbb;font-size:.68rem;letter-spacing:.06em"><span style="flex:1;height:1px;background:var(--border)"></span>OR PASTE A TOKEN<span style="flex:1;height:1px;background:var(--border)"></span></div>
+        </div>
         <div class="form-group">
           <label>Zone ID</label>
           <input type="text" id="zone-id" placeholder="32-character zone ID" maxlength="32"/>
@@ -288,9 +293,30 @@ function showAlert(id, msg, type) {
 }
 function hideAlert(id) { $(id).style.display = 'none'; }
 
+// ── OAuth handoff ───────────────────────────────────────────────────────────────
+// After "Connect Cloudflare", the callback redirects to /audit#cf_token=...
+// Read it into the in-memory token field, then strip the fragment so the token
+// does not linger in the URL or browser history.
+(function readOAuthHash() {
+  if (!location.hash || location.hash.length < 2) return;
+  const p = new URLSearchParams(location.hash.slice(1));
+  const token = p.get('cf_token');
+  const error = p.get('cf_error');
+  if (!token && !error) return;
+  history.replaceState(null, '', location.pathname + location.search);
+  if (error) { showAlert('scan-alert', '✗ Connect with Cloudflare failed: ' + error, 'error'); return; }
+  $('api-token').value = token;
+  if ($('acc-api-token')) $('acc-api-token').value = token;
+  const exp = Number(p.get('cf_expires'));
+  const mins = exp ? Math.round(exp / 60) : null;
+  showAlert('scan-alert', '✓ Connected to Cloudflare — read-only token loaded for this session'
+    + (mins ? ' (expires in ~' + mins + ' min)' : '') + '. Enter a Zone ID and run the audit.', 'success');
+})();
+
 // Gate History/Drift tabs on /api/status — don't advertise features that aren't bound
 fetch('/api/status').then(r => r.json()).then(data => {
   _features = data.features || _features;
+  if (data.oauth_enabled) { const oc = $('oauth-connect'); if (oc) oc.style.display = 'block'; }
   document.querySelectorAll('[data-requires]').forEach(tab => {
     const key = tab.dataset.requires;
     if (_features[key]) tab.hidden = false;

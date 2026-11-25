@@ -243,3 +243,33 @@ audit_results.json
 
 # macOS specific files
 .DS_Store
+
+# ── Private / local-only — never commit (keep to ourselves) ──────────────────
+# Local Claude Code state & per-machine config (keep shared .claude/settings.json)
+.claude/settings.local.json
+.claude/*.local.json
+.claude/.credentials*
+# Editor / IDE
+.vscode/
+.idea/
+*.code-workspace
+# Local env & secret material (in addition to .env / .dev.vars above)
+.dev.vars.*
+*.local
+*.local.json
+*.pem
+*.key
+*.p12
+secrets/
+# Private working notes, planning, scratch — not for the public repo or npm
+roadmap.md
+notes/
+scratch/
+private/
+internal/
+*.private.md
+*.draft.md
+TODO.local.md
+# Screenshots & captures dropped into the repo
+screenshots/
+*.screenshot.*
